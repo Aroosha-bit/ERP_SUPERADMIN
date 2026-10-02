@@ -25,6 +25,7 @@ import {
   type BrandingData,
   type TenantCreationPayload,
 } from "@/hooks/tenants/use-tenant-wizard";
+import Breadcrumb from "@/components/common/breadcrumb/page";
 
 // Initial sample tree matching image 2
 const defaultTreeData: HierarchyTreeNode[] = [
@@ -151,14 +152,7 @@ const defaultTreeData: HierarchyTreeNode[] = [
 export default function TenantCreationWizard() {
   const router = useRouter();
 
-  // Wizard active step state (0 to 6)
-  // Step 0: Organization Basics
-  // Step 1: Business Unit
-  // Step 2: Org. Hierarchy
-  // Step 3: Plan & Modules
-  // Step 4: First Admin User
-  // Step 5: Branding
-  // Step 6: Review & Create
+
   const [activeStep, setActiveStep] = useState(0); // Starts at Step 0: Organization Basics
 
   // Step 0: Organization Basics State
@@ -326,19 +320,17 @@ export default function TenantCreationWizard() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-91px)] bg-[#f5f5f5] px-4 py-4 text-[#101d3b] sm:px-6 lg:px-6 font-sans">
+    <div className="min-h-[calc(100vh-91px)] bg-[#f5f5f5] px-4 py-7 text-[#101d3b] sm:px-6 lg:px-6 font-sans">
       {/* Breadcrumb Navigation */}
-      <nav aria-label="Breadcrumb" className="mb-7 flex items-center gap-2 text-xs text-[#647087]">
-        <Link href="/dashboard" className="hover:text-[#101d3b]">
-          Dashboard
-        </Link>
-        <span aria-hidden="true">/</span>
-        <Link href="/tenants" className="hover:text-[#101d3b]">
-          Tenant Directory
-        </Link>
-        <span aria-hidden="true">/</span>
-        <span className="font-medium text-[#26344f]">New Tenant</span>
-      </nav>
+      <div className="mb-6">
+        <Breadcrumb
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Tenant Directory", href: "/tenants" },
+            { label: "Create Tenant" },
+          ]}
+        />
+      </div>
 
       {/* 7-Step Dynamic Stepper */}
       <WizardStepper activeStep={activeStep} onStepClick={(idx) => setActiveStep(idx)} />
