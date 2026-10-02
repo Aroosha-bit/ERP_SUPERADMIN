@@ -320,7 +320,7 @@ export default function TenantCreationWizard() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-91px)] bg-[#f5f5f5] px-4 py-7 text-[#101d3b] sm:px-6 lg:px-6 font-sans">
+    <div className="p-4 sm:p-6 lg:p-8">
       {/* Breadcrumb Navigation */}
       <div className="mb-6">
         <Breadcrumb
