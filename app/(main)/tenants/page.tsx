@@ -1,5 +1,5 @@
-import React from "react";
+import TenantDirectory from "@/components/tenants/TenantDirectory";
 
 export default function TenantsPage() {
-  return <div className="text-black">page</div>;
+  return <TenantDirectory />;
 }
