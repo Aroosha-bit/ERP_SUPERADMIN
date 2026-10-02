@@ -1,5 +1,5 @@
 import React from "react";
 
-export default function DashboardPage() {
+export default function TenantsPage() {
   return <div className="text-black">page</div>;
 }
