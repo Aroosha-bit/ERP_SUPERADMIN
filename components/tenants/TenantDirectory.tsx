@@ -50,7 +50,7 @@ export default function TenantDirectory() {
         </div>
 
         <Link
-          href="/tenants/new"
+          href="/tenants/create-tenant"
           className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#020D2B] px-5 text-sm font-medium text-white"
         >
           <Plus size={18} />
