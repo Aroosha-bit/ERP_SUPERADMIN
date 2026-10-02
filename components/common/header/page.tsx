@@ -1,6 +1,7 @@
 "use client";
 
 import { Bell, Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -9,6 +10,13 @@ interface HeaderProps {
 export default function Header({
   onMenuClick,
 }: HeaderProps) {
+  const pathname = usePathname();
+  const pageTitle = pathname.startsWith("/tenants/create-tenant")
+    ? "New Tenant"
+    : pathname.startsWith("/tenants")
+      ? "Tenant Directory"
+      : "Dashboard";
+
   return (
     <header
       className="
@@ -45,7 +53,7 @@ export default function Header({
             </div>
 
             <h1 className="truncate text-[24px] font-semibold leading-tight sm:text-[26px]">
-              Dashboard
+              {pageTitle}
             </h1>
           </div>
         </div>
