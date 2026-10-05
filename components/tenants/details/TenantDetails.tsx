@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Breadcrumb from "@/components/common/breadcrumb/page";
+import PageContainer from "@/components/common/page-container/PageContainer";
 import { tenants } from "@/data/tenants";
 import TenantHeader from "./TenantHeader";
 import TenantTabs, { type TenantTab } from "./TenantTabs";
@@ -17,20 +17,29 @@ export default function TenantDetails({ tenantId }: { tenantId: string }) {
 
   if (!tenant) {
     return (
-      <div className="p-4 sm:p-6 lg:p-8">
-        <Breadcrumb items={[{ label: "Dashboard", href: "/dashboard" }, { label: "Tenant Directory", href: "/tenants" }, { label: "Tenant Not Found" }]} />
-        <div className="mt-8 rounded-xl bg-white p-8 text-center text-slate-600">Tenant not found.</div>
-      </div>
+      <PageContainer
+        breadcrumbs={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Tenant Directory", href: "/tenants" },
+          { label: "Tenant Not Found" },
+        ]}
+      >
+        <div className="rounded-xl bg-white p-8 text-center text-slate-600">
+          Tenant not found.
+        </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <Breadcrumb items={[{ label: "Dashboard", href: "/dashboard" }, { label: "Tenant Directory", href: "/tenants" }, { label: tenant.name }]} />
-
-      <div className="mt-6">
-        <TenantHeader tenant={tenant} />
-      </div>
+    <PageContainer
+      breadcrumbs={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Tenant Directory", href: "/tenants" },
+        { label: tenant.name },
+      ]}
+    >
+      <TenantHeader tenant={tenant} />
 
       <div className="mt-6">
         <TenantTabs activeTab={activeTab} onChange={setActiveTab} />
@@ -40,6 +49,6 @@ export default function TenantDetails({ tenantId }: { tenantId: string }) {
       {activeTab === "modules" && <TenantModules />}
       {activeTab === "users" && <TenantUsers />}
       {activeTab === "activity" && <TenantActivity />}
-    </div>
+    </PageContainer>
   );
 }

@@ -25,7 +25,7 @@ import {
   type BrandingData,
   type TenantCreationPayload,
 } from "@/hooks/tenants/use-tenant-wizard";
-import Breadcrumb from "@/components/common/breadcrumb/page";
+import PageContainer from "@/components/common/page-container/PageContainer";
 
 // Initial sample tree matching image 2
 const defaultTreeData: HierarchyTreeNode[] = [
@@ -152,7 +152,6 @@ const defaultTreeData: HierarchyTreeNode[] = [
 export default function TenantCreationWizard() {
   const router = useRouter();
 
-
   const [activeStep, setActiveStep] = useState(0); // Starts at Step 0: Organization Basics
 
   // Step 0: Organization Basics State
@@ -170,19 +169,25 @@ export default function TenantCreationWizard() {
   // Step 1: Business Unit State
   const [selectedUnit, setSelectedUnit] = useState<string>("");
   const [unitError, setUnitError] = useState<string>("");
-  const [otherUnitDetails, setOtherUnitDetails] = useState<BusinessUnitDetails>({
-    name: "",
-    code: "",
-    description: "",
-  });
+  const [otherUnitDetails, setOtherUnitDetails] = useState<BusinessUnitDetails>(
+    {
+      name: "",
+      code: "",
+      description: "",
+    },
+  );
 
   // Step 2: Org Hierarchy Tree State (starts empty matching image 1 top half)
   const [treeData, setTreeData] = useState<HierarchyTreeNode[]>([]);
 
   // Step 3: Plan & Modules State (empty by default)
-  const [selectedModules, setSelectedModules] = useState<Record<string, boolean>>({});
+  const [selectedModules, setSelectedModules] = useState<
+    Record<string, boolean>
+  >({});
 
-  const [selectedSubModules, setSelectedSubModules] = useState<Record<string, boolean>>({});
+  const [selectedSubModules, setSelectedSubModules] = useState<
+    Record<string, boolean>
+  >({});
 
   // Step 4: First Admin User State
   const [adminUser, setAdminUser] = useState<AdminUserData>({
@@ -212,7 +217,10 @@ export default function TenantCreationWizard() {
   const handlePrev = () => setActiveStep((prev) => Math.max(prev - 1, 0));
 
   // Step 0 Handlers
-  function handleOrganizationChange(field: keyof OrganizationBasicsData, value: string) {
+  function handleOrganizationChange(
+    field: keyof OrganizationBasicsData,
+    value: string,
+  ) {
     setOrganization((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -240,7 +248,9 @@ export default function TenantCreationWizard() {
         return [...cleaned, newNode];
       }
 
-      function insertUnderParent(nodes: HierarchyTreeNode[]): HierarchyTreeNode[] {
+      function insertUnderParent(
+        nodes: HierarchyTreeNode[],
+      ): HierarchyTreeNode[] {
         return nodes.map((n) => {
           if (n.id === newNode.parentId) {
             return { ...n, children: [...(n.children || []), newNode] };
@@ -261,7 +271,10 @@ export default function TenantCreationWizard() {
       function remove(nodes: HierarchyTreeNode[]): HierarchyTreeNode[] {
         return nodes
           .filter((n) => n.id !== nodeId)
-          .map((n) => ({ ...n, children: n.children ? remove(n.children) : [] }));
+          .map((n) => ({
+            ...n,
+            children: n.children ? remove(n.children) : [],
+          }));
       }
       return remove(prev);
     });
@@ -308,7 +321,7 @@ export default function TenantCreationWizard() {
           moduleId: id,
           moduleName: id.toUpperCase(),
           enabledSubModules: Object.keys(selectedSubModules).filter(
-            (subId) => subId.startsWith(id) && selectedSubModules[subId]
+            (subId) => subId.startsWith(id) && selectedSubModules[subId],
           ),
         })),
       adminUser,
@@ -320,20 +333,18 @@ export default function TenantCreationWizard() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      {/* Breadcrumb Navigation */}
-      <div className="mb-6">
-        <Breadcrumb
-          items={[
-            { label: "Dashboard", href: "/dashboard" },
-            { label: "Tenant Directory", href: "/tenants" },
-            { label: "Create Tenant" },
-          ]}
-        />
-      </div>
-
+    <PageContainer
+      breadcrumbs={[
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Tenant Directory", href: "/tenants" },
+        { label: "Create Tenant" },
+      ]}
+    >
       {/* 7-Step Dynamic Stepper */}
-      <WizardStepper activeStep={activeStep} onStepClick={(idx) => setActiveStep(idx)} />
+      <WizardStepper
+        activeStep={activeStep}
+        onStepClick={(idx) => setActiveStep(idx)}
+      />
 
       {/* Sequential Step Screens */}
       {activeStep === 0 && (
@@ -414,7 +425,7 @@ export default function TenantCreationWizard() {
                 moduleId: id,
                 moduleName: id.toUpperCase(),
                 enabledSubModules: Object.keys(selectedSubModules).filter(
-                  (subId) => subId.startsWith(id) && selectedSubModules[subId]
+                  (subId) => subId.startsWith(id) && selectedSubModules[subId],
                 ),
               })),
             adminUser,
@@ -425,6 +436,6 @@ export default function TenantCreationWizard() {
           onSubmit={handleFinalSubmit}
         />
       )}
-    </div>
+    </PageContainer>
   );
 }
