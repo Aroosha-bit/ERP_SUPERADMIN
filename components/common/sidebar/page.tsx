@@ -50,7 +50,7 @@ const sidebarSections: SidebarSection[] = [
       },
       {
         title: "Platform Settings",
-        href: "/settings",
+        href: "/platform-settings",
         icon: Settings,
       },
     ],
