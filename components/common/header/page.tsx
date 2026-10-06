@@ -47,7 +47,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
     )?.title ?? "Dashboard";
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-30 h-[91px] bg-[#020D2B] text-white lg:left-[280px]">
+    <header className="fixed left-0 right-0 top-0 z-30 h-[91px] bg-primary text-white lg:left-[280px]">
       <div className="flex h-full items-center justify-between px-4 sm:px-7 lg:px-8">
         {/* Left */}
         <div className="flex min-w-0 items-center gap-3 sm:gap-4">

@@ -86,10 +86,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       />
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-dvh w-[280px] flex-col bg-[#020D2B] text-white transition-transform duration-300 ease-in-out lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`fixed left-0 top-0 z-50 flex h-dvh w-[280px] flex-col bg-sidebar text-white transition-transform duration-300 ease-in-out lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         {/* Logo / Brand */}
-        <div className="flex h-[91px] shrink-0 items-center border-b border-white/10 px-5">
+        <div className="flex h-[91px] shrink-0 items-center border-b border-gray-50 px-5">
           <div className="flex min-w-0 items-center gap-3">
             <Image src={erplogo} alt="ERP Logo" className="shrink-0" />
 
@@ -133,10 +133,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       key={item.href}
                       href={item.href}
                       onClick={onClose}
-                      className={`group relative flex min-h-14 items-center gap-4 rounded-lg px-4 text-[16px] font-medium transition-colors duration-200 ${isActive ? "bg-[#182544] text-white" : "text-slate-100 hover:bg-white/5"}`}
+                      className={`group relative flex min-h-14 items-center gap-4 rounded-lg px-4 text-[16px] font-medium transition-colors duration-200 ${isActive ? "bg-sidebar-active text-white" : "text-slate-100 hover:bg-white/5"}`}
                     >
                       {isActive && (
-                        <span className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-[#20A9E8]" />
+                        <span className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-sidebar-accent" />
                       )}
 
                       <Icon

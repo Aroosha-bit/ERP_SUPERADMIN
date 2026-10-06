@@ -96,7 +96,7 @@ export default function LoginForm() {
 
         {/* Sign In Button */}
         <div className="mt-5 flex justify-center sm:mt-6">
-          <Button type="submit" className="h-9 rounded-md bg-[#001033] px-5 text-xs text-white hover:bg-[#001033]/90">
+          <Button type="submit" className="h-9 rounded-md bg-auth-background px-5 text-xs text-white hover:bg-[#001033]/90">
             Sign In
           </Button>
         </div>

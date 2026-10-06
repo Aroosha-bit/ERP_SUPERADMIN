@@ -1,3 +1,107 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+
+:root {
+  /* Brand */
+  --primary: #020d2b;
+  --primary-foreground: #ffffff;
+  /* --primary-hover: #182544; */
+
+  --accent: #20a9e8;
+  /* --accent-foreground: #ffffff; */
+
+  /* Authentication */
+  --auth-background: #001033;
+  /* --auth-card: #f7f7f7; */
+  /* --auth-link: #3ba6db; */
+
+  /* Application */
+  --background: #f5f6f8;
+  --foreground: #020d2b;
+
+  /* Borders / Inputs */
+  --border: #e2e8f0;
+  --input: #cbd5e1;
+  --ring: #20a9e8;
+
+  /* States */
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --success: #16a34a;
+  --warning: #f59e0b;
+
+  /* Switch */
+  --switch-checked: #2563eb;
+  --switch-unchecked: #dde5f0;
+
+  /* Sidebar */
+  --sidebar: #020d2b;
+  --sidebar-foreground: #ffffff;
+  --sidebar-active: #182544;
+  --sidebar-accent: #20a9e8;
+
+  /* Radius */
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-auth-background: var(--auth-background);
+  --color-auth-card: var(--auth-card);
+  --color-auth-link: var(--auth-link);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --color-switch-checked: var(--switch-checked);
+  --color-switch-unchecked: var(--switch-unchecked);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-accent: var(--sidebar-accent);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
