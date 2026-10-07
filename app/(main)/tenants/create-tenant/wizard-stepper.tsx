@@ -24,10 +24,13 @@ export const WIZARD_STEPS = [
 
 interface WizardStepperProps {
   activeStep: number;
-  onStepClick?: (stepIndex: number) => void;
+  completedSteps: number[];
 }
 
-export function WizardStepper({ activeStep, onStepClick }: WizardStepperProps) {
+export function WizardStepper({
+  activeStep,
+  completedSteps,
+}: WizardStepperProps) {
   return (
     <ol
       aria-label="Tenant creation progress"
@@ -36,14 +39,13 @@ export function WizardStepper({ activeStep, onStepClick }: WizardStepperProps) {
       {WIZARD_STEPS.map((step, index) => {
         const Icon = step.icon;
         const isActive = index === activeStep;
-        const isComplete = index < activeStep;
+        const isComplete = completedSteps.includes(index);
 
         return (
           <li
             key={step.label}
             aria-current={isActive ? "step" : undefined}
-            className="relative flex min-w-[105px] flex-1 flex-col items-center text-center cursor-pointer"
-            onClick={() => onStepClick && onStepClick(index)}
+            className="relative flex min-w-[105px] flex-1 flex-col items-center text-center"
           >
             {/* Connecting line to the left */}
             {index > 0 && (

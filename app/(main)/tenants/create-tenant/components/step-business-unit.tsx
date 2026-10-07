@@ -1,10 +1,14 @@
 "use client";
 
 import React, { FormEvent } from "react";
-import { Building2, Check, MapPin } from "lucide-react";
+import { Building2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
 import { BusinessUnitDetails } from "@/hooks/tenants/use-tenant-wizard";
 
 export const BUSINESS_UNITS = [
@@ -31,20 +35,24 @@ export const BUSINESS_UNITS = [
   },
 ];
 
-interface StepBusinessUnitProps {
+type StepBusinessUnitProps = {
   selectedUnit: string;
   unitError?: string;
   otherDetails: BusinessUnitDetails;
+  errors?: Record<string, string>;
   onSelectUnit: (unit: string) => void;
-  onOtherDetailsChange: (details: BusinessUnitDetails) => void;
+  onOtherDetailsChange: (
+    details: BusinessUnitDetails
+  ) => void;
   onBack: () => void;
   onContinue: () => void;
-}
+};
 
 export function StepBusinessUnit({
   selectedUnit,
   unitError,
   otherDetails,
+  errors,
   onSelectUnit,
   onOtherDetailsChange,
   onBack,
@@ -64,22 +72,25 @@ export function StepBusinessUnit({
 
       <form onSubmit={handleSubmit}>
         {/* Selection Cards Grid */}
-        <div
-          role="radiogroup"
+        <RadioGroup
+          value={selectedUnit}
+          onValueChange={(value) => {
+            if (typeof value === "string") {
+              onSelectUnit(value);
+            }
+          }}
           aria-label="Business Unit"
+          aria-describedby={unitError ? "business-unit-error" : undefined}
           className="grid grid-cols-1 gap-4 md:grid-cols-3"
         >
           {BUSINESS_UNITS.map((unit) => {
             const Icon = unit.icon;
             const isSelected = selectedUnit === unit.title;
             return (
-              <button
+              <Label
                 key={unit.title}
-                type="button"
-                role="radio"
-                aria-checked={isSelected}
-                onClick={() => onSelectUnit(unit.title)}
-                className={`relative flex min-h-28 w-full items-start gap-3 rounded-xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#36a9e1] ${
+                htmlFor={`business-unit-${unit.id}`}
+                className={`relative flex min-h-28 w-full cursor-pointer items-start gap-3 rounded-xl border p-4 text-left transition focus-within:outline-none focus-within:ring-2 focus-within:ring-[#36a9e1] ${
                   isSelected
                     ? "border-2 border-[#36a9e1] bg-white ring-1 ring-[#36a9e1]"
                     : "border-[#e3e4e7] hover:border-[#9bcde4]"
@@ -102,23 +113,18 @@ export function StepBusinessUnit({
                     {unit.description}
                   </span>
                 </span>
-                <span
-                  aria-hidden="true"
-                  className={`mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border transition-all ${
-                    isSelected
-                      ? "border-[#36a9e1] bg-[#36a9e1] text-white"
-                      : "border-[#d4e7f0]"
-                  }`}
-                >
-                  {isSelected && <Check className="size-3.5 stroke-[2.5]" />}
-                </span>
-              </button>
+                <RadioGroupItem
+                  id={`business-unit-${unit.id}`}
+                  value={unit.title}
+                  className="mt-0.5 size-5"
+                />
+              </Label>
             );
           })}
-        </div>
+        </RadioGroup>
 
         {unitError && (
-          <p role="alert" className="mt-3 text-sm text-red-600">
+          <p id="business-unit-error" role="alert" className="mt-3 text-sm text-red-600">
             {unitError}
           </p>
         )}
@@ -132,13 +138,24 @@ export function StepBusinessUnit({
               </Label>
               <Input
                 id="other-unit-name"
+                aria-invalid={Boolean(errors?.unitName)}
+                aria-describedby={errors?.unitName ? "other-unit-name-error" : undefined}
                 placeholder="Name"
                 value={otherDetails.name}
                 onChange={(e) =>
                   onOtherDetailsChange({ ...otherDetails, name: e.target.value })
                 }
-                className="h-10 rounded-md border-[#d7e6ed] bg-white px-2.5 text-sm text-[#4b5568] placeholder:text-[#a9adb6] focus-visible:border-[#36a9e1]"
+                className={`h-10 rounded-md border bg-white px-2.5 text-sm text-[#4b5568] placeholder:text-[#a9adb6] ${
+                  errors?.unitName
+                    ? "border-red-500 focus-visible:border-red-500"
+                    : "border-[#d7e6ed] focus-visible:border-[#36a9e1]"
+                }`}
               />
+              {errors?.unitName && (
+                <p id="other-unit-name-error" role="alert" className="text-xs text-red-600">
+                  {errors.unitName}
+                </p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="other-unit-code" className="text-sm font-semibold text-[#51586a]">
@@ -146,13 +163,24 @@ export function StepBusinessUnit({
               </Label>
               <Input
                 id="other-unit-code"
+                aria-invalid={Boolean(errors?.unitCode)}
+                aria-describedby={errors?.unitCode ? "other-unit-code-error" : undefined}
                 placeholder="code"
                 value={otherDetails.code}
                 onChange={(e) =>
                   onOtherDetailsChange({ ...otherDetails, code: e.target.value })
                 }
-                className="h-10 rounded-md border-[#d7e6ed] bg-white px-2.5 text-sm text-[#4b5568] placeholder:text-[#a9adb6] focus-visible:border-[#36a9e1]"
+                className={`h-10 rounded-md border bg-white px-2.5 text-sm text-[#4b5568] placeholder:text-[#a9adb6] ${
+                  errors?.unitCode
+                    ? "border-red-500 focus-visible:border-red-500"
+                    : "border-[#d7e6ed] focus-visible:border-[#36a9e1]"
+                }`}
               />
+              {errors?.unitCode && (
+                <p id="other-unit-code-error" role="alert" className="text-xs text-red-600">
+                  {errors.unitCode}
+                </p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="other-unit-description" className="text-sm font-semibold text-[#51586a]">
@@ -178,7 +206,7 @@ export function StepBusinessUnit({
             className="h-10 border-[#a8afbd] px-6 text-sm text-[#172440] hover:bg-[#f5f7fa]"
             onClick={onBack}
           >
-            Cancel
+          Back
           </Button>
           <Button
             type="submit"

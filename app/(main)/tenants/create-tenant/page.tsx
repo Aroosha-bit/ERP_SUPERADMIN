@@ -1,5 +1,5 @@
-import TenantCreationWizard from "./tenant-creation-wizard";
+import { redirect } from "next/navigation";
 
 export default function CreateTenantPage() {
-  return <TenantCreationWizard />;
+  redirect("/tenants/create-tenant/organization-basics");
 }
