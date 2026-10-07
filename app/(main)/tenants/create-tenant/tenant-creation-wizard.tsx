@@ -885,7 +885,7 @@ export default function TenantCreationWizard({
           payload={buildTenantPayload()}
           isSubmitting={createTenantMutation.isPending}
           onBack={handlePrev}
-          onSubmit={handleFinalSubmit}
+          handleSubmit={handleFinalSubmit}
         />
       )}
     </PageContainer>
