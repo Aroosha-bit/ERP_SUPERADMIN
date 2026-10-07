@@ -6,6 +6,8 @@ import {
 } from "@tanstack/react-query";
 import { useState } from "react";
 
+import { AuthProvider } from "@/provider/AuthProvider";
+
 export default function Provider({
   children,
 }: {
@@ -19,13 +21,18 @@ export default function Provider({
             staleTime: 60 * 1000,
             refetchOnWindowFocus: false,
           },
+          mutations: {
+            retry: false,
+          },
         },
       })
   );
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <AuthProvider>
+        {children}
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
