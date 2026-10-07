@@ -4,7 +4,7 @@ const MOCK_USER = {
   id: "user-001",
   name: "Aroosha Fatima",
   email: "arooshafatima1006@gmail.com",
-  cnic: "3720363404654",
+  cnic: "0000987654321",
   role: "SUPER_ADMIN",
 };
 
