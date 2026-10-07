@@ -1,23 +1,26 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
+import { useLogin } from "@/hooks/auth/useLogin";
 import {
   loginSchema,
   type LoginFormValues,
 } from "@/lib/validations/auth.schema";
-import { useLogin } from "@/hooks/auth/useLogin";
-
+import { useAuth } from "@/provider/AuthProvider";
 
 export default function LoginForm() {
   const router = useRouter();
+
+  const { isAuthenticated, isAuthLoading } = useAuth();
 
   const loginMutation = useLogin();
 
@@ -30,17 +33,30 @@ export default function LoginForm() {
     },
   });
 
+  useEffect(() => {
+    if (!isAuthLoading && isAuthenticated) {
+      router.replace("/dashboard");
+    }
+  }, [isAuthenticated, isAuthLoading, router]);
+
   function onSubmit(values: LoginFormValues) {
     loginMutation.mutate(values, {
       onSuccess: () => {
-        router.push("/dashboard");
+        router.replace("/dashboard");
       },
     });
   }
 
+  if (isAuthLoading) {
+    return (
+      <div className="w-full max-w-[440px] rounded-[16px] bg-[#F7F7F7] px-5 py-10 text-center sm:px-8 md:px-10">
+        <p className="text-sm text-[#001033]">Checking authentication...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-[440px] rounded-[16px] bg-[#F7F7F7] px-5 py-7 sm:px-8 sm:py-8 md:px-10 md:py-10">
-      {/* Heading */}
       <div className="text-center">
         <h1 className="text-[20px] font-semibold leading-[120%] tracking-[0px] text-[#001033] sm:text-[22px] md:text-[24px]">
           Let&apos;s Get Started
@@ -51,13 +67,8 @@ export default function LoginForm() {
         </p>
       </div>
 
-      {/* Form */}
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="mt-6 sm:mt-8"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 sm:mt-8">
         <FieldGroup className="gap-3 sm:gap-4">
-          {/* Email */}
           <Controller
             name="email"
             control={form.control}
@@ -79,7 +90,6 @@ export default function LoginForm() {
             )}
           />
 
-          {/* CNIC */}
           <Controller
             name="cnic"
             control={form.control}
@@ -102,7 +112,6 @@ export default function LoginForm() {
             )}
           />
 
-          {/* Password */}
           <Controller
             name="password"
             control={form.control}
@@ -125,14 +134,14 @@ export default function LoginForm() {
           />
         </FieldGroup>
 
-        {/* API Error */}
         {loginMutation.isError && (
-          <p className="mt-3 text-center text-xs text-red-500">
-            {loginMutation.error.message}
+          <p role="alert" className="mt-3 text-center text-xs text-red-500">
+            {loginMutation.error instanceof Error
+              ? loginMutation.error.message
+              : "Unable to sign in. Please try again."}
           </p>
         )}
 
-        {/* Forgot Password / Register */}
         <div className="mt-3 flex items-center justify-between gap-4 text-[10px] sm:text-xs">
           <Link
             href="/forgot-password"
@@ -141,15 +150,11 @@ export default function LoginForm() {
             Forgot Password?
           </Link>
 
-          <Link
-            href="/register"
-            className="text-[#3BA6DB] hover:underline"
-          >
+          <Link href="/register" className="text-[#3BA6DB] hover:underline">
             Register
           </Link>
         </div>
 
-        {/* Sign In Button */}
         <div className="mt-5 flex justify-center sm:mt-6">
           <Button
             type="submit"

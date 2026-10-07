@@ -1,22 +1,49 @@
+import type {
+  AuthUser,
+  LoginResponse,
+  RefreshResponse,
+} from "@/lib/auth/auth-types";
+
 export type LoginPayload = {
   email: string;
   cnic: string;
   password: string;
 };
 
-export type LoginUser = {
-  id: string;
-  name: string;
-  email: string;
-  cnic: string;
-  role: string;
-};
-
-export type LoginResponse = {
+type LogoutResponse = {
   success: boolean;
   message: string;
-  user: LoginUser;
 };
+
+type MeResponse = {
+  success: boolean;
+  user: AuthUser;
+};
+
+async function parseResponse<T>(
+  response: Response,
+  fallbackMessage: string
+): Promise<T> {
+  let data: unknown;
+
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error(fallbackMessage);
+  }
+
+  if (!response.ok) {
+    const errorData = data as {
+      message?: string;
+    };
+
+    throw new Error(
+      errorData.message || fallbackMessage
+    );
+  }
+
+  return data as T;
+}
 
 export async function loginUser(
   payload: LoginPayload
@@ -26,14 +53,55 @@ export async function loginUser(
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify(payload),
   });
 
-  const data = await response.json();
+  return parseResponse<LoginResponse>(
+    response,
+    "Login failed."
+  );
+}
 
-  if (!response.ok) {
-    throw new Error(data.message || "Login failed.");
-  }
+export async function refreshAccessToken(): Promise<RefreshResponse> {
+  const response = await fetch("/api/auth/refresh", {
+    method: "POST",
+    credentials: "include",
+    cache: "no-store",
+  });
 
-  return data;
+  return parseResponse<RefreshResponse>(
+    response,
+    "Your session has expired."
+  );
+}
+
+export async function logoutUser(): Promise<LogoutResponse> {
+  const response = await fetch("/api/auth/logout", {
+    method: "POST",
+    credentials: "include",
+  });
+
+  return parseResponse<LogoutResponse>(
+    response,
+    "Logout failed."
+  );
+}
+
+export async function getCurrentUser(
+  accessToken: string
+): Promise<MeResponse> {
+  const response = await fetch("/api/auth/me", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    credentials: "include",
+    cache: "no-store",
+  });
+
+  return parseResponse<MeResponse>(
+    response,
+    "Unable to load user."
+  );
 }
