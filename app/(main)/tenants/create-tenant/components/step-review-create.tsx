@@ -1,31 +1,34 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { TenantCreationPayload } from "@/hooks/tenants/use-tenant-wizard";
+import { useRouter } from "next/navigation";
 
 interface StepReviewCreateProps {
   payload: TenantCreationPayload;
   isSubmitting?: boolean;
+  setIsSubmitting?: (isSubmitting: boolean) => void;
   onBack: () => void;
-  onSubmit: () => void;
+  handleSubmit: () => void;
 }
 
 export function StepReviewCreate({
   payload,
   isSubmitting = false,
+  setIsSubmitting = () => {},
   onBack,
-  onSubmit,
 }: StepReviewCreateProps) {
   const enabledModulesCount = payload.modules.filter(
-    (m) => m.enabledSubModules.length > 0 || m.moduleId
+    (m) => m.enabledSubModules.length > 0 || m.moduleId,
   ).length;
 
   const currencyCode = payload.organization.currency
     ? payload.organization.currency.split(" ")[0]
     : "";
   const fyStart = payload.organization.financialYear || "";
-  const currencyFy = currencyCode || fyStart ? `${currencyCode} · ${fyStart}` : "—";
+  const currencyFy =
+    currencyCode || fyStart ? `${currencyCode} · ${fyStart}` : "—";
 
   const reviewItems = [
     {
@@ -75,7 +78,21 @@ export function StepReviewCreate({
       value: payload.organization.language || "—",
     },
   ];
+  const router = useRouter();
+  const handleSubmit = async () => {
+    try {
+      setIsSubmitting(true);
 
+      // Later this will be your TanStack Query mutation/API call.
+      // await createTenant(payload);
+
+      router.push("/tenants/success");
+    } catch (error) {
+      console.error("Failed to create tenant:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <section className="rounded-2xl bg-white px-5 py-7 shadow-[0_1px_3px_rgba(15,23,42,0.03)] sm:px-8 sm:py-8 border border-slate-100">
       {/* Header */}
@@ -115,7 +132,7 @@ export function StepReviewCreate({
           type="button"
           disabled={isSubmitting}
           className="h-10 bg-[#020d2b] px-6 text-sm font-semibold text-white hover:bg-[#142342] shadow-xs disabled:opacity-50 cursor-pointer"
-          onClick={onSubmit}
+          onClick={handleSubmit}
         >
           {isSubmitting ? "Provisioning..." : "Create Tenant"}
         </Button>
