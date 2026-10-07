@@ -107,7 +107,7 @@ export function StepBranding({
                     id={`branding-color-${swatch.id}`}
                     value={swatch.value}
                     aria-label={`${swatch.id} primary colour`}
-                    className="sr-only"
+                    className="sr-only py-10"
                   />
 
                   <span

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +13,14 @@ import {
   loginSchema,
   type LoginFormValues,
 } from "@/lib/validations/auth.schema";
+import { useLogin } from "@/hooks/auth/useLogin";
+
 
 export default function LoginForm() {
+  const router = useRouter();
+
+  const loginMutation = useLogin();
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -24,10 +31,11 @@ export default function LoginForm() {
   });
 
   function onSubmit(values: LoginFormValues) {
-    console.log("Login values:", values);
-
-    // Later when backend API is available:
-    // loginMutation.mutate(values);
+    loginMutation.mutate(values, {
+      onSuccess: () => {
+        router.push("/dashboard");
+      },
+    });
   }
 
   return (
@@ -44,7 +52,10 @@ export default function LoginForm() {
       </div>
 
       {/* Form */}
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 sm:mt-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mt-6 sm:mt-8"
+      >
         <FieldGroup className="gap-3 sm:gap-4">
           {/* Email */}
           <Controller
@@ -58,6 +69,7 @@ export default function LoginForm() {
                   placeholder="Email"
                   aria-invalid={fieldState.invalid}
                   className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+                  disabled={loginMutation.isPending}
                 />
 
                 {fieldState.invalid && (
@@ -80,6 +92,7 @@ export default function LoginForm() {
                   maxLength={13}
                   aria-invalid={fieldState.invalid}
                   className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+                  disabled={loginMutation.isPending}
                 />
 
                 {fieldState.invalid && (
@@ -101,6 +114,7 @@ export default function LoginForm() {
                   placeholder="Password"
                   aria-invalid={fieldState.invalid}
                   className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+                  disabled={loginMutation.isPending}
                 />
 
                 {fieldState.invalid && (
@@ -111,6 +125,13 @@ export default function LoginForm() {
           />
         </FieldGroup>
 
+        {/* API Error */}
+        {loginMutation.isError && (
+          <p className="mt-3 text-center text-xs text-red-500">
+            {loginMutation.error.message}
+          </p>
+        )}
+
         {/* Forgot Password / Register */}
         <div className="mt-3 flex items-center justify-between gap-4 text-[10px] sm:text-xs">
           <Link
@@ -120,7 +141,10 @@ export default function LoginForm() {
             Forgot Password?
           </Link>
 
-          <Link href="/register" className="text-[#3BA6DB] hover:underline">
+          <Link
+            href="/register"
+            className="text-[#3BA6DB] hover:underline"
+          >
             Register
           </Link>
         </div>
@@ -129,9 +153,10 @@ export default function LoginForm() {
         <div className="mt-5 flex justify-center sm:mt-6">
           <Button
             type="submit"
+            disabled={loginMutation.isPending}
             className="h-9 rounded-md bg-auth-background px-5 text-xs text-white hover:bg-[#001033]/90"
           >
-            Sign In
+            {loginMutation.isPending ? "Signing In..." : "Sign In"}
           </Button>
         </div>
       </form>
