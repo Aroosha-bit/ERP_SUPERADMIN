@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 export interface SubModuleItem {
   id: string;
@@ -90,18 +91,20 @@ export const MODULES_CATALOG: ModuleDefinition[] = [
   },
 ];
 
-interface StepPlanModulesProps {
-  selectedModules: Record<string, boolean>; // moduleId -> enabled
-  selectedSubModules: Record<string, boolean>; // subModuleId -> enabled
+type StepPlanModulesProps = {
+  selectedModules: string[];
+  selectedSubModules: string[];
+  errors?: Record<string, string>;
   onToggleModule: (moduleId: string) => void;
   onToggleSubModule: (subModuleId: string) => void;
   onBack: () => void;
   onContinue: () => void;
-}
+};
 
 export function StepPlanModules({
   selectedModules,
   selectedSubModules,
+  errors,
   onToggleModule,
   onToggleSubModule,
   onBack,
@@ -132,15 +135,15 @@ export function StepPlanModules({
       {/* 2-Column Grid of Modules */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {MODULES_CATALOG.map((mod) => {
-          const isSelected = selectedModules[mod.id] ?? false;
+          const isSelected = selectedModules.includes(mod.id);
           const isExpanded = expandedModules[mod.id] ?? false;
 
           return (
             <div key={mod.id} className="space-y-3">
               {/* Module Header Card */}
-              <div
-                onClick={() => handleModuleClick(mod.id)}
-                className={`flex items-center justify-between rounded-xl border p-4 cursor-pointer transition-all duration-150 select-none ${
+              <Label
+                htmlFor={`module-${mod.id}`}
+                className={`flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all duration-150 select-none ${
                   isSelected
                     ? "border-[#36a9e1] bg-white ring-1 ring-[#36a9e1]"
                     : "border-[#e3e4e7] bg-white hover:border-[#b0d9ed]"
@@ -149,49 +152,35 @@ export function StepPlanModules({
                 <span className="text-sm font-semibold text-[#101d3b]">
                   {mod.title}
                 </span>
-
-                {/* Checkbox Box */}
-                <div
-                  className={`flex size-5 shrink-0 items-center justify-center rounded transition-colors ${
-                    isSelected
-                      ? "bg-[#020d2b] text-white"
-                      : "border border-[#d7e6ed] bg-white"
-                  }`}
-                >
-                  {isSelected && <Check className="size-3.5 stroke-[3]" />}
-                </div>
-              </div>
+                <Checkbox
+                  id={`module-${mod.id}`}
+                  checked={isSelected}
+                  onCheckedChange={() => handleModuleClick(mod.id)}
+                  aria-label={`Enable ${mod.title}`}
+                />
+              </Label>
 
               {/* Sub-Options List displayed when module is clicked/expanded */}
               {isExpanded && mod.subModules && mod.subModules.length > 0 && (
                 <div className="pl-4 space-y-2.5 transition-all duration-200 animate-in fade-in slide-in-from-top-1">
                   {mod.subModules.map((sub) => {
-                    const isSubChecked = selectedSubModules[sub.id] ?? false;
+                    const isSubChecked = selectedSubModules.includes(sub.id);
                     return (
-                      <label
+                      <Label
                         key={sub.id}
-                        className="flex items-center gap-3 cursor-pointer select-none group"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleSubModule(sub.id);
-                        }}
+                        htmlFor={`submodule-${sub.id}`}
+                        className="group flex cursor-pointer items-center gap-3 select-none"
                       >
-                        {/* Radio/Checkbox circle outline matching image */}
-                        <div
-                          className={`flex size-4 shrink-0 items-center justify-center rounded-full border transition ${
-                            isSubChecked
-                              ? "border-[#36a9e1] bg-[#36a9e1]"
-                              : "border-[#c9d8e4] bg-white group-hover:border-[#36a9e1]"
-                          }`}
-                        >
-                          {isSubChecked && (
-                            <span className="size-1.5 rounded-full bg-white" />
-                          )}
-                        </div>
+                        <Checkbox
+                          id={`submodule-${sub.id}`}
+                          checked={isSubChecked}
+                          onCheckedChange={() => onToggleSubModule(sub.id)}
+                          aria-label={`Enable ${sub.name}`}
+                        />
                         <span className="text-xs text-[#51586a] group-hover:text-[#101d3b]">
                           {sub.name}
                         </span>
-                      </label>
+                      </Label>
                     );
                   })}
                 </div>
@@ -200,6 +189,12 @@ export function StepPlanModules({
           );
         })}
       </div>
+
+      {errors?.modules && (
+        <p role="alert" className="mt-3 text-sm text-red-600">
+          {errors.modules}
+        </p>
+      )}
 
       {/* Helper dependency note */}
       <p className="mt-8 text-xs font-medium text-[#36a9e1]">

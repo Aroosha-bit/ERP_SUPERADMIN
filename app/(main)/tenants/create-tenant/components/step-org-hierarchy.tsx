@@ -20,6 +20,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { HierarchyTreeNode, OrgNodeType } from "@/hooks/tenants/use-tenant-wizard";
 
 function getNodeTypeConfig(type: string) {
@@ -318,53 +325,59 @@ export function StepOrgHierarchy({
                     </div>
 
                     <div className="space-y-1">
-                      <Label className="text-xs font-semibold text-[#51586a]">Type</Label>
-                      <div className="relative">
-                        <select
-                          value={nodeFormData.type}
-                          onChange={(e) =>
+                      <Label htmlFor="hierarchy-node-type" className="text-xs font-semibold text-[#51586a]">Type</Label>
+                      <Select
+                        value={nodeFormData.type}
+                        onValueChange={(value) => {
+                          if (value !== null) {
                             setNodeFormData({
                               ...nodeFormData,
-                              type: e.target.value as OrgNodeType,
-                            })
+                              type: value as OrgNodeType,
+                            });
                           }
-                          className="h-9 w-full appearance-none rounded-md border border-[#d7e6ed] bg-white px-2.5 pr-8 text-xs sm:text-sm text-[#4b5568] outline-none focus:border-[#36a9e1] cursor-pointer"
-                        >
-                          <option value="Authority">Authority</option>
-                          <option value="Head Office">Head Office</option>
-                          <option value="Wing / Cost Centers">Wing / Cost Centers</option>
-                          <option value="Operations">Operations</option>
-                          <option value="Region / Division">Region / Division</option>
-                          <option value="District">District</option>
-                          <option value="Tehsil">Tehsil</option>
-                          <option value="Field Service">Field Service</option>
-                        </select>
-                        <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2 text-[#697386]" />
-                      </div>
+                        }}
+                      >
+                        <SelectTrigger id="hierarchy-node-type" className="h-9 w-full rounded-md border-[#d7e6ed] bg-white px-2.5 text-xs text-[#4b5568] sm:text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Authority">Authority</SelectItem>
+                          <SelectItem value="Head Office">Head Office</SelectItem>
+                          <SelectItem value="Wing / Cost Centers">Wing / Cost Centers</SelectItem>
+                          <SelectItem value="Operations">Operations</SelectItem>
+                          <SelectItem value="Region / Division">Region / Division</SelectItem>
+                          <SelectItem value="District">District</SelectItem>
+                          <SelectItem value="Tehsil">Tehsil</SelectItem>
+                          <SelectItem value="Field Service">Field Service</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <Label className="text-xs font-semibold text-[#51586a]">
+                    <Label htmlFor="hierarchy-parent-node" className="text-xs font-semibold text-[#51586a]">
                       + Add A Parent Node
                     </Label>
-                    <div className="relative">
-                      <select
-                        value={nodeFormData.parentId}
-                        onChange={(e) =>
-                          setNodeFormData({ ...nodeFormData, parentId: e.target.value })
-                        }
-                        className="h-9 w-full appearance-none rounded-md border border-[#d7e6ed] bg-white px-2.5 pr-8 text-xs sm:text-sm text-[#4b5568] outline-none focus:border-[#36a9e1] cursor-pointer"
-                      >
-                        <option value="">None (Top-Level Root Node)</option>
+                    <Select
+                      value={nodeFormData.parentId || null}
+                      onValueChange={(value) =>
+                        setNodeFormData({
+                          ...nodeFormData,
+                          parentId: value ?? "",
+                        })
+                      }
+                    >
+                      <SelectTrigger id="hierarchy-parent-node" className="h-9 w-full rounded-md border-[#d7e6ed] bg-white px-2.5 text-xs text-[#4b5568] sm:text-sm">
+                        <SelectValue placeholder="None (Top-Level Root Node)" />
+                      </SelectTrigger>
+                      <SelectContent>
                         {flatNodes.map((fn) => (
-                          <option key={fn.id} value={fn.id}>
+                          <SelectItem key={fn.id} value={fn.id}>
                             {fn.name}
-                          </option>
+                          </SelectItem>
                         ))}
-                      </select>
-                      <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2 text-[#697386]" />
-                    </div>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -381,24 +394,31 @@ export function StepOrgHierarchy({
                     </div>
 
                     <div className="space-y-1">
-                      <Label className="text-xs font-semibold text-[#51586a]">Status</Label>
-                      <div className="relative">
-                        <select
-                          value={nodeFormData.status}
-                          onChange={(e) =>
+                      <Label htmlFor="hierarchy-node-status" className="text-xs font-semibold text-[#51586a]">Status</Label>
+                      <Select
+                        value={nodeFormData.status}
+                        onValueChange={(value) => {
+                          if (
+                            value === "Pending" ||
+                            value === "Active" ||
+                            value === "Inactive"
+                          ) {
                             setNodeFormData({
                               ...nodeFormData,
-                              status: e.target.value as "Pending" | "Active" | "Inactive",
-                            })
+                              status: value,
+                            });
                           }
-                          className="h-9 w-full appearance-none rounded-md border border-[#d7e6ed] bg-white px-2.5 pr-8 text-xs sm:text-sm text-[#4b5568] outline-none focus:border-[#36a9e1] cursor-pointer"
-                        >
-                          <option value="Pending">Pending</option>
-                          <option value="Active">Active</option>
-                          <option value="Inactive">Inactive</option>
-                        </select>
-                        <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2 text-[#697386]" />
-                      </div>
+                        }}
+                      >
+                        <SelectTrigger id="hierarchy-node-status" className="h-9 w-full rounded-md border-[#d7e6ed] bg-white px-2.5 text-xs text-[#4b5568] sm:text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Pending">Pending</SelectItem>
+                          <SelectItem value="Active">Active</SelectItem>
+                          <SelectItem value="Inactive">Inactive</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
@@ -470,7 +490,7 @@ export function StepOrgHierarchy({
           className="h-10 border-[#a8afbd] px-6 text-sm text-[#172440] hover:bg-[#f5f7fa]"
           onClick={onBack}
         >
-          Cancel
+          Back
         </Button>
         <div className="flex items-center gap-3">
           <Button

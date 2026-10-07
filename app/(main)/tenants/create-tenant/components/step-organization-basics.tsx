@@ -1,10 +1,16 @@
 "use client";
 
 import React, { FormEvent } from "react";
-import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { OrganizationBasicsData } from "@/hooks/tenants/use-tenant-wizard";
 
 type OrganizationField = keyof OrganizationBasicsData;
@@ -86,15 +92,20 @@ const organizationFields: {
   },
 ];
 
-interface StepOrganizationBasicsProps {
+type StepOrganizationBasicsProps = {
   data: OrganizationBasicsData;
-  onChange: (field: OrganizationField, value: string) => void;
+  errors?: Record<string, string>;
+  onChange: (
+    field: keyof OrganizationBasicsData,
+    value: string
+  ) => void;
   onCancel: () => void;
   onContinue: () => void;
-}
+};
 
 export function StepOrganizationBasics({
   data,
+  errors,
   onChange,
   onCancel,
   onContinue,
@@ -113,7 +124,7 @@ export function StepOrganizationBasics({
         </p>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form noValidate onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2">
           {organizationFields.map((field) => {
             const id = `organization-${field.name}`;
@@ -123,38 +134,66 @@ export function StepOrganizationBasics({
                   {field.label} <span className="text-[#36a9e1]">*</span>
                 </Label>
                 {field.type === "select" && field.options ? (
-                  <div className="relative">
-                    <select
+                  <Select
+                    value={data[field.name] || null}
+                    onValueChange={(value) => {
+                      if (value !== null) {
+                        onChange(field.name, value);
+                      }
+                    }}
+                  >
+                    <SelectTrigger
                       id={id}
-                      required
-                      value={data[field.name] || ""}
-                      onChange={(event) => onChange(field.name, event.target.value)}
-                      className="h-10 w-full appearance-none rounded-md border border-[#d7e6ed] bg-white px-2.5 pr-9 text-sm text-[#4b5568] outline-none transition focus:border-[#36a9e1] focus:ring-2 focus:ring-[#36a9e1]/15 cursor-pointer"
+                      aria-required="true"
+                      aria-invalid={Boolean(errors?.[field.name])}
+                      aria-describedby={
+                        errors?.[field.name] ? `${id}-error` : undefined
+                      }
+                      className={`h-10 w-full rounded-md border bg-white px-2.5 text-sm text-[#4b5568] ${
+                        errors?.[field.name]
+                          ? "border-red-500"
+                          : "border-[#d7e6ed]"
+                      }`}
                     >
-                      <option value="" disabled>
-                        {field.placeholder || `Select ${field.label}`}
-                      </option>
+                      <SelectValue
+                        placeholder={field.placeholder || `Select ${field.label}`}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
                       {field.options.map((option) => (
-                        <option key={option} value={option}>
+                        <SelectItem key={option} value={option}>
                           {option}
-                        </option>
+                        </SelectItem>
                       ))}
-                    </select>
-                    <ChevronDown
-                      aria-hidden="true"
-                      className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-[#697386]"
-                    />
-                  </div>
+                    </SelectContent>
+                  </Select>
                 ) : (
                   <Input
                     id={id}
                     name={field.name}
                     required
+                    aria-invalid={Boolean(errors?.[field.name])}
+                    aria-describedby={
+                      errors?.[field.name] ? `${id}-error` : undefined
+                    }
                     value={data[field.name] || ""}
                     placeholder={field.placeholder}
                     onChange={(event) => onChange(field.name, event.target.value)}
-                    className="h-10 rounded-md border-[#d7e6ed] bg-white px-2.5 text-sm text-[#4b5568] placeholder:text-[#a9adb6] focus-visible:border-[#36a9e1] focus-visible:ring-[#36a9e1]/15"
+                    className={`h-10 rounded-md border bg-white px-2.5 text-sm text-[#4b5568] placeholder:text-[#a9adb6] focus-visible:ring-[#36a9e1]/15 ${
+                      errors?.[field.name]
+                        ? "border-red-500 focus-visible:border-red-500"
+                        : "border-[#d7e6ed] focus-visible:border-[#36a9e1]"
+                    }`}
                   />
+                )}
+                {errors?.[field.name] && (
+                  <p
+                    id={`${id}-error`}
+                    role="alert"
+                    className="text-xs text-red-600"
+                  >
+                    {errors[field.name]}
+                  </p>
                 )}
               </div>
             );
@@ -168,7 +207,7 @@ export function StepOrganizationBasics({
             className="h-10 border-[#a8afbd] px-6 text-sm text-[#172440] hover:bg-[#f5f7fa]"
             onClick={onCancel}
           >
-            Cancel
+            Back
           </Button>
           <Button
             type="submit"

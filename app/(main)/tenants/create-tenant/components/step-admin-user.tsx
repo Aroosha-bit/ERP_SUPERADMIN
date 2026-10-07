@@ -6,15 +6,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AdminUserData } from "@/hooks/tenants/use-tenant-wizard";
 
-interface StepAdminUserProps {
+type StepAdminUserProps = {
   adminData: AdminUserData;
-  onChange: (field: keyof AdminUserData, value: string) => void;
+  errors?: Record<string, string>;
+  onChange: (
+    field: keyof AdminUserData,
+    value: string
+  ) => void;
   onBack: () => void;
   onContinue: () => void;
-}
+};
 
 export function StepAdminUser({
   adminData,
+  errors,
   onChange,
   onBack,
   onContinue,
@@ -34,7 +39,7 @@ export function StepAdminUser({
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form noValidate onSubmit={handleSubmit} className="space-y-6">
         {/* Form Inputs Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Full Name */}
@@ -45,11 +50,28 @@ export function StepAdminUser({
             <Input
               id="admin-full-name"
               required
+              aria-invalid={Boolean(errors?.fullName)}
+              aria-describedby={
+                errors?.fullName ? "admin-full-name-error" : undefined
+              }
               placeholder="Jane Doe"
               value={adminData.fullName}
               onChange={(e) => onChange("fullName", e.target.value)}
-              className="h-10 rounded-md border-[#d7e6ed] bg-white px-3 text-sm text-[#4b5568] placeholder:text-[#a9adb6] focus-visible:border-[#36a9e1]"
+              className={`h-10 rounded-md border bg-white px-3 text-sm text-[#4b5568] placeholder:text-[#a9adb6] ${
+                errors?.fullName
+                  ? "border-red-500 focus-visible:border-red-500"
+                  : "border-[#d7e6ed] focus-visible:border-[#36a9e1]"
+              }`}
             />
+            {errors?.fullName && (
+              <p
+                id="admin-full-name-error"
+                role="alert"
+                className="text-xs text-red-600"
+              >
+                {errors.fullName}
+              </p>
+            )}
           </div>
 
           {/* Email */}
@@ -61,11 +83,26 @@ export function StepAdminUser({
               id="admin-email"
               type="email"
               required
+              aria-invalid={Boolean(errors?.email)}
+              aria-describedby={errors?.email ? "admin-email-error" : undefined}
               placeholder="admin@plra.gov.pk"
               value={adminData.email}
               onChange={(e) => onChange("email", e.target.value)}
-              className="h-10 rounded-md border-[#d7e6ed] bg-white px-3 text-sm text-[#4b5568] placeholder:text-[#a9adb6] focus-visible:border-[#36a9e1]"
+              className={`h-10 rounded-md border bg-white px-3 text-sm text-[#4b5568] placeholder:text-[#a9adb6] ${
+                errors?.email
+                  ? "border-red-500 focus-visible:border-red-500"
+                  : "border-[#d7e6ed] focus-visible:border-[#36a9e1]"
+              }`}
             />
+            {errors?.email && (
+              <p
+                id="admin-email-error"
+                role="alert"
+                className="text-xs text-red-600"
+              >
+                {errors.email}
+              </p>
+            )}
             <p className="text-xs text-[#828894]">Used as login identity.</p>
           </div>
         </div>
