@@ -6,6 +6,8 @@
   /* Brand */
   --primary: #020d2b;
   --primary-foreground: #ffffff;
+  --popover: #ffffff;
+  --popover-foreground: #020d2b;
   /* --primary-hover: #182544; */
 
   --accent: #20a9e8;
