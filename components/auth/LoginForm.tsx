@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 
-import { loginSchema, type LoginFormValues } from "@/lib/validations/auth.schema";
+import {
+  loginSchema,
+  type LoginFormValues,
+} from "@/lib/validations/auth.schema";
 
 export default function LoginForm() {
   const form = useForm<LoginFormValues>({
@@ -49,9 +52,17 @@ export default function LoginForm() {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <Input {...field} type="email" placeholder="Email" aria-invalid={fieldState.invalid} className="h-9 w-full text-xs sm:h-10 sm:text-sm" />
+                <Input
+                  {...field}
+                  type="email"
+                  placeholder="Email"
+                  aria-invalid={fieldState.invalid}
+                  className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+                />
 
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -62,9 +73,18 @@ export default function LoginForm() {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <Input {...field} inputMode="numeric" placeholder="CNIC Number" maxLength={13} aria-invalid={fieldState.invalid} className="h-9 w-full text-xs sm:h-10 sm:text-sm" />
+                <Input
+                  {...field}
+                  inputMode="numeric"
+                  placeholder="CNIC Number"
+                  maxLength={13}
+                  aria-invalid={fieldState.invalid}
+                  className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+                />
 
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -75,9 +95,17 @@ export default function LoginForm() {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <Input {...field} type="password" placeholder="Password" aria-invalid={fieldState.invalid} className="h-9 w-full text-xs sm:h-10 sm:text-sm" />
+                <Input
+                  {...field}
+                  type="password"
+                  placeholder="Password"
+                  aria-invalid={fieldState.invalid}
+                  className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+                />
 
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -85,7 +113,10 @@ export default function LoginForm() {
 
         {/* Forgot Password / Register */}
         <div className="mt-3 flex items-center justify-between gap-4 text-[10px] sm:text-xs">
-          <Link href="/forgot-password" className="text-[#3BA6DB] hover:underline">
+          <Link
+            href="/forgot-password"
+            className="text-[#3BA6DB] hover:underline"
+          >
             Forgot Password?
           </Link>
 
@@ -96,7 +127,10 @@ export default function LoginForm() {
 
         {/* Sign In Button */}
         <div className="mt-5 flex justify-center sm:mt-6">
-          <Button type="submit" className="h-9 rounded-md bg-auth-background px-5 text-xs text-white hover:bg-[#001033]/90">
+          <Button
+            type="submit"
+            className="h-9 rounded-md bg-auth-background px-5 text-xs text-white hover:bg-[#001033]/90"
+          >
             Sign In
           </Button>
         </div>
