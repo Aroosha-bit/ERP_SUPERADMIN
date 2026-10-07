@@ -3,14 +3,24 @@
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 
-import { loginSchema, type LoginFormValues } from "@/lib/validations/auth.schema";
+import {
+  loginSchema,
+  type LoginFormValues,
+} from "@/lib/validations/auth.schema";
+import { useLogin } from "@/hooks/auth/useLogin";
+
 
 export default function LoginForm() {
+  const router = useRouter();
+
+  const loginMutation = useLogin();
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -21,10 +31,11 @@ export default function LoginForm() {
   });
 
   function onSubmit(values: LoginFormValues) {
-    console.log("Login values:", values);
-
-    // Later when backend API is available:
-    // loginMutation.mutate(values);
+    loginMutation.mutate(values, {
+      onSuccess: () => {
+        router.push("/dashboard");
+      },
+    });
   }
 
   return (
@@ -41,7 +52,10 @@ export default function LoginForm() {
       </div>
 
       {/* Form */}
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 sm:mt-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mt-6 sm:mt-8"
+      >
         <FieldGroup className="gap-3 sm:gap-4">
           {/* Email */}
           <Controller
@@ -49,9 +63,18 @@ export default function LoginForm() {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <Input {...field} type="email" placeholder="Email" aria-invalid={fieldState.invalid} className="h-9 w-full text-xs sm:h-10 sm:text-sm" />
+                <Input
+                  {...field}
+                  type="email"
+                  placeholder="Email"
+                  aria-invalid={fieldState.invalid}
+                  className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+                  disabled={loginMutation.isPending}
+                />
 
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -62,9 +85,19 @@ export default function LoginForm() {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <Input {...field} inputMode="numeric" placeholder="CNIC Number" maxLength={13} aria-invalid={fieldState.invalid} className="h-9 w-full text-xs sm:h-10 sm:text-sm" />
+                <Input
+                  {...field}
+                  inputMode="numeric"
+                  placeholder="CNIC Number"
+                  maxLength={13}
+                  aria-invalid={fieldState.invalid}
+                  className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+                  disabled={loginMutation.isPending}
+                />
 
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -75,29 +108,55 @@ export default function LoginForm() {
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <Input {...field} type="password" placeholder="Password" aria-invalid={fieldState.invalid} className="h-9 w-full text-xs sm:h-10 sm:text-sm" />
+                <Input
+                  {...field}
+                  type="password"
+                  placeholder="Password"
+                  aria-invalid={fieldState.invalid}
+                  className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+                  disabled={loginMutation.isPending}
+                />
 
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
         </FieldGroup>
 
+        {/* API Error */}
+        {loginMutation.isError && (
+          <p className="mt-3 text-center text-xs text-red-500">
+            {loginMutation.error.message}
+          </p>
+        )}
+
         {/* Forgot Password / Register */}
         <div className="mt-3 flex items-center justify-between gap-4 text-[10px] sm:text-xs">
-          <Link href="/forgot-password" className="text-[#3BA6DB] hover:underline">
+          <Link
+            href="/forgot-password"
+            className="text-[#3BA6DB] hover:underline"
+          >
             Forgot Password?
           </Link>
 
-          <Link href="/register" className="text-[#3BA6DB] hover:underline">
+          <Link
+            href="/register"
+            className="text-[#3BA6DB] hover:underline"
+          >
             Register
           </Link>
         </div>
 
         {/* Sign In Button */}
         <div className="mt-5 flex justify-center sm:mt-6">
-          <Button type="submit" className="h-9 rounded-md bg-auth-background px-5 text-xs text-white hover:bg-[#001033]/90">
-            Sign In
+          <Button
+            type="submit"
+            disabled={loginMutation.isPending}
+            className="h-9 rounded-md bg-auth-background px-5 text-xs text-white hover:bg-[#001033]/90"
+          >
+            {loginMutation.isPending ? "Signing In..." : "Sign In"}
           </Button>
         </div>
       </form>
