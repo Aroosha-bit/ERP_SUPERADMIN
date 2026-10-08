@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ERP Superadmin
 
-## Getting Started
+## Run with the JSON Server mock API
 
-First, run the development server:
+Install dependencies with `npm install`, then start both processes in separate terminals:
 
 ```bash
+npm run mock-server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The mock API serves `db.json` at `http://localhost:3001`. `.env.example` contains the mock API settings; copy it to `.env.local` if you need to change the local configuration. The app defaults to this API when `NEXT_PUBLIC_API_MODE` is unset or set to `mock`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Tenant records use the JSON Server REST collection: `GET /tenants`, `GET /tenants/:id`, `POST /tenants`, `PUT /tenants/:id`, and `DELETE /tenants/:id`. The POST/PUT body includes the complete wizard submission in `creationData`, along with the summary fields used by the directory and tenant overview. Editing from the tenant menu loads that record and fills the same wizard screens; save replaces it with a full PUT. Wizard progress between screens is held in Redux memory, not session storage.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Connect a real backend
 
-## Learn More
+Set these environment variables in `.env.local` and restart Next.js:
 
-To learn more about Next.js, take a look at the following resources:
+```dotenv
+NEXT_PUBLIC_API_MODE=backend
+NEXT_PUBLIC_API_BASE_URL=https://your-api.example.com
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Tenant endpoint paths, request/response schemas, and DTO mapping are centralized in `services/tenants/tenant-api.ts` and `lib/schemas/api.ts`. Update the API adapter and schemas there if the backend differs; the TanStack Query hooks and UI can continue using the same tenant types. Protected backend requests use the shared authenticated `apiFetch` client. Tenant creation and update each send one complete tenant record. Tenant deletion removes associated resource records before deleting the tenant; use backend transactions/cascade behavior or replace that adapter operation to guarantee atomicity in production.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+TanStack Query owns remote/server data; Redux Toolkit owns the shared tenant-directory filter and transient multi-route wizard form state without duplicating the API cache. Zod validates API responses and the wizard submission.

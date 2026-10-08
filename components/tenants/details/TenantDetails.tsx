@@ -2,18 +2,34 @@
 
 import { useState } from "react";
 import PageContainer from "@/components/common/page-container/PageContainer";
-import { tenants } from "@/data/tenants";
 import TenantHeader from "./TenantHeader";
 import TenantTabs, { type TenantTab } from "./TenantTabs";
 import TenantOverview from "./TenantOverview";
 import TenantModules from "./TenantModules";
 import TenantUsers from "./TenantUsers";
 import TenantActivity from "./TenantActivity";
+import { useTenant } from "@/hooks/tenants/use-tenants";
+import { TenantDirectorySkeleton } from "@/components/common/loading-skeletons";
 
 export default function TenantDetails({ tenantId }: { tenantId: string }) {
   const [activeTab, setActiveTab] = useState<TenantTab>("overview");
+  const { data: tenant, isLoading, isError, error } = useTenant(tenantId);
 
-  const tenant = tenants.find((item) => item.id === tenantId);
+  if (isLoading) {
+    return (
+      <PageContainer breadcrumbs={[{ label: "Dashboard", href: "/dashboard" }, { label: "Tenant Directory", href: "/tenants" }]}>
+        <TenantDirectorySkeleton />
+      </PageContainer>
+    );
+  }
+
+  if (isError) {
+    return (
+      <PageContainer breadcrumbs={[{ label: "Dashboard", href: "/dashboard" }, { label: "Tenant Directory", href: "/tenants" }]}>
+        <p role="alert" className="rounded-lg bg-red-50 p-4 text-sm text-red-700">{error.message}</p>
+      </PageContainer>
+    );
+  }
 
   if (!tenant) {
     return (
@@ -46,9 +62,9 @@ export default function TenantDetails({ tenantId }: { tenantId: string }) {
       </div>
 
       {activeTab === "overview" && <TenantOverview tenant={tenant} />}
-      {activeTab === "modules" && <TenantModules />}
-      {activeTab === "users" && <TenantUsers />}
-      {activeTab === "activity" && <TenantActivity />}
+      {activeTab === "modules" && <TenantModules tenantId={tenant.id} />}
+      {activeTab === "users" && <TenantUsers tenantId={tenant.id} />}
+      {activeTab === "activity" && <TenantActivity tenantId={tenant.id} />}
     </PageContainer>
   );
 }
