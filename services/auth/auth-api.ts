@@ -22,7 +22,7 @@ type MeResponse = {
 
 async function parseResponse<T>(
   response: Response,
-  fallbackMessage: string
+  fallbackMessage: string,
 ): Promise<T> {
   let data: unknown;
 
@@ -37,17 +37,13 @@ async function parseResponse<T>(
       message?: string;
     };
 
-    throw new Error(
-      errorData.message || fallbackMessage
-    );
+    throw new Error(errorData.message || fallbackMessage);
   }
 
   return data as T;
 }
 
-export async function loginUser(
-  payload: LoginPayload
-): Promise<LoginResponse> {
+export async function loginUser(payload: LoginPayload): Promise<LoginResponse> {
   const response = await fetch("/api/auth/login", {
     method: "POST",
     headers: {
@@ -57,10 +53,7 @@ export async function loginUser(
     body: JSON.stringify(payload),
   });
 
-  return parseResponse<LoginResponse>(
-    response,
-    "Login failed."
-  );
+  return parseResponse<LoginResponse>(response, "Login failed.");
 }
 
 export async function refreshAccessToken(): Promise<RefreshResponse> {
@@ -70,10 +63,7 @@ export async function refreshAccessToken(): Promise<RefreshResponse> {
     cache: "no-store",
   });
 
-  return parseResponse<RefreshResponse>(
-    response,
-    "Your session has expired."
-  );
+  return parseResponse<RefreshResponse>(response, "Your session has expired.");
 }
 
 export async function logoutUser(): Promise<LogoutResponse> {
@@ -82,15 +72,10 @@ export async function logoutUser(): Promise<LogoutResponse> {
     credentials: "include",
   });
 
-  return parseResponse<LogoutResponse>(
-    response,
-    "Logout failed."
-  );
+  return parseResponse<LogoutResponse>(response, "Logout failed.");
 }
 
-export async function getCurrentUser(
-  accessToken: string
-): Promise<MeResponse> {
+export async function getCurrentUser(accessToken: string): Promise<MeResponse> {
   const response = await fetch("/api/auth/me", {
     method: "GET",
     headers: {
@@ -100,8 +85,5 @@ export async function getCurrentUser(
     cache: "no-store",
   });
 
-  return parseResponse<MeResponse>(
-    response,
-    "Unable to load user."
-  );
+  return parseResponse<MeResponse>(response, "Unable to load user.");
 }

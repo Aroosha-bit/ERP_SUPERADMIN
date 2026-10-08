@@ -16,51 +16,34 @@ import {
   setAccessToken,
   subscribeToAccessToken,
 } from "@/lib/auth/token-store";
-import {
-  logoutUser,
-  refreshAccessToken,
-} from "@/services/auth/auth-api";
+import { logoutUser, refreshAccessToken } from "@/services/auth/auth-api";
 
 type AuthContextValue = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isAuthLoading: boolean;
-  establishSession: (
-    accessToken: string,
-    user: AuthUser
-  ) => void;
+  establishSession: (accessToken: string, user: AuthUser) => void;
   logout: () => Promise<void>;
 };
 
-const AuthContext =
-  createContext<AuthContextValue | null>(null);
+const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
-  const [user, setUser] =
-    useState<AuthUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
 
-  const [hasAccessToken, setHasAccessToken] =
-    useState(false);
+  const [hasAccessToken, setHasAccessToken] = useState(false);
 
-  const [isAuthLoading, setIsAuthLoading] =
-    useState(true);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   const establishSession = useCallback(
-    (
-      accessToken: string,
-      authenticatedUser: AuthUser
-    ) => {
+    (accessToken: string, authenticatedUser: AuthUser) => {
       setAccessToken(accessToken);
       setUser(authenticatedUser);
       setHasAccessToken(true);
     },
-    []
+    [],
   );
 
   const clearSession = useCallback(() => {
@@ -84,17 +67,13 @@ export function AuthProvider({
 
     async function restoreSession() {
       try {
-        const response =
-          await refreshAccessToken();
+        const response = await refreshAccessToken();
 
         if (cancelled) {
           return;
         }
 
-        establishSession(
-          response.accessToken,
-          response.user
-        );
+        establishSession(response.accessToken, response.user);
       } catch {
         if (!cancelled) {
           clearSession();
@@ -128,35 +107,22 @@ export function AuthProvider({
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
-      isAuthenticated:
-        Boolean(user) && hasAccessToken,
+      isAuthenticated: Boolean(user) && hasAccessToken,
       isAuthLoading,
       establishSession,
       logout,
     }),
-    [
-      user,
-      hasAccessToken,
-      isAuthLoading,
-      establishSession,
-      logout,
-    ]
+    [user, hasAccessToken, isAuthLoading, establishSession, logout],
   );
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error(
-      "useAuth must be used inside AuthProvider."
-    );
+    throw new Error("useAuth must be used inside AuthProvider.");
   }
 
   return context;

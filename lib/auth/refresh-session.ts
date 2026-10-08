@@ -12,17 +12,13 @@ const globalForAuth = globalThis as typeof globalThis & {
 };
 
 const sessions =
-  globalForAuth.__mockRefreshSessions ??
-  new Map<string, RefreshSession>();
+  globalForAuth.__mockRefreshSessions ?? new Map<string, RefreshSession>();
 
 if (process.env.NODE_ENV !== "production") {
   globalForAuth.__mockRefreshSessions = sessions;
 }
 
-export function createRefreshSession(
-  userId: string,
-  expiresInSeconds: number
-) {
+export function createRefreshSession(userId: string, expiresInSeconds: number) {
   const jti = randomUUID();
 
   const session: RefreshSession = {
@@ -41,10 +37,7 @@ export function getRefreshSession(jti: string) {
   return sessions.get(jti);
 }
 
-export function isRefreshSessionValid(
-  jti: string,
-  userId: string
-) {
+export function isRefreshSessionValid(jti: string, userId: string) {
   const session = sessions.get(jti);
 
   if (!session) {
@@ -80,7 +73,7 @@ export function revokeRefreshSession(jti: string) {
 export function rotateRefreshSession(
   oldJti: string,
   userId: string,
-  expiresInSeconds: number
+  expiresInSeconds: number,
 ) {
   revokeRefreshSession(oldJti);
 

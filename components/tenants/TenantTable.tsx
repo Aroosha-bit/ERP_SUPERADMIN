@@ -2,7 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { MoreVertical } from "lucide-react";
-import { flexRender, useTable, tableFeatures, rowPaginationFeature, createPaginatedRowModel } from "@tanstack/react-table";
+import {
+  flexRender,
+  useTable,
+  tableFeatures,
+  rowPaginationFeature,
+  createPaginatedRowModel,
+} from "@tanstack/react-table";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { Tenant } from "@/types/tenant";
 import TenantStatusBadge from "./TenantStatusBadge";
@@ -28,7 +34,9 @@ export default function TenantTable({ data }: Props) {
       cell: ({ row }) => (
         <div>
           <p className="font-medium text-[#18213D]">{row.original.name}</p>
-          <p className="mt-0.5 text-xs text-slate-400">{row.original.slug} · {row.original.plan}</p>
+          <p className="mt-0.5 text-xs text-slate-400">
+            {row.original.slug} · {row.original.plan}
+          </p>
         </div>
       ),
     },
@@ -40,7 +48,12 @@ export default function TenantTable({ data }: Props) {
     {
       accessorKey: "modulesEnabled",
       header: "Modules Enabled",
-      cell: ({ row }) => <ModulesIndicator enabled={row.original.modulesEnabled} total={row.original.totalModules} />,
+      cell: ({ row }) => (
+        <ModulesIndicator
+          enabled={row.original.modulesEnabled}
+          total={row.original.totalModules}
+        />
+      ),
     },
     {
       accessorKey: "createdAt",
@@ -54,7 +67,11 @@ export default function TenantTable({ data }: Props) {
       id: "actions",
       header: "",
       cell: () => (
-        <button type="button" onClick={(e) => e.stopPropagation()} className="rounded-md p-2 text-slate-500 hover:bg-slate-100">
+        <button
+          type="button"
+          onClick={(e) => e.stopPropagation()}
+          className="rounded-md p-2 text-slate-500 hover:bg-slate-100"
+        >
           <MoreVertical size={17} />
         </button>
       ),
@@ -83,8 +100,16 @@ export default function TenantTable({ data }: Props) {
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b border-slate-200">
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-5 py-4 text-left text-sm font-semibold text-[#020D2B]">
-                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  <th
+                    key={header.id}
+                    className="px-5 py-4 text-left text-sm font-semibold text-[#020D2B]"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </th>
                 ))}
               </tr>
@@ -93,9 +118,16 @@ export default function TenantTable({ data }: Props) {
 
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} onClick={() => router.push(`/tenants/${row.original.id}`)} className="cursor-pointer border-b border-slate-200 transition-colors last:border-b-0 hover:bg-slate-50">
+              <tr
+                key={row.id}
+                onClick={() => router.push(`/tenants/${row.original.id}`)}
+                className="cursor-pointer border-b border-slate-200 transition-colors last:border-b-0 hover:bg-slate-50"
+              >
                 {row.getAllCells().map((cell) => (
-                  <td key={cell.id} className="px-5 py-4 text-sm text-slate-600">
+                  <td
+                    key={cell.id}
+                    className="px-5 py-4 text-sm text-slate-600"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -105,7 +137,14 @@ export default function TenantTable({ data }: Props) {
         </table>
       </div>
 
-      <TenantPagination pageIndex={pagination.pageIndex} pageCount={table.getPageCount()} previousPage={() => table.previousPage()} nextPage={() => table.nextPage()} canPreviousPage={table.getCanPreviousPage()} canNextPage={table.getCanNextPage()} />
+      <TenantPagination
+        pageIndex={pagination.pageIndex}
+        pageCount={table.getPageCount()}
+        previousPage={() => table.previousPage()}
+        nextPage={() => table.nextPage()}
+        canPreviousPage={table.getCanPreviousPage()}
+        canNextPage={table.getCanNextPage()}
+      />
     </div>
   );
 }

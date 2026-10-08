@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Filter, Plus } from "lucide-react";
-import { tenants } from "@/data/tenants";
+// import { tenants } from "@/data/tenants";
 import type { TenantStatus } from "@/types/tenant";
 import PageContainer from "@/components/common/page-container/PageContainer";
 import PageHeader from "@/components/common/page-header/PageHeader";
@@ -16,21 +16,27 @@ type FilterValue = "All" | TenantStatus;
 export default function TenantDirectory() {
   const [filter, setFilter] = useState<FilterValue>("All");
 
+  const { data: tenantsResponse, isLoading, isError, error } = useTenants();
+
+  const tenantList = tenantsResponse?.data ?? [];
+
+  const filteredTenants =
+    filter === "All"
+      ? tenantList
+      : tenantList.filter((tenant) => tenant.status === filter);
+
   const counts = useMemo(
     () => ({
-      All: tenants.length,
-      Active: tenants.filter((tenant) => tenant.status === "Active").length,
-      Trial: tenants.filter((tenant) => tenant.status === "Trial").length,
-      Onboarding: tenants.filter((tenant) => tenant.status === "Onboarding")
+      All: tenantList.length,
+      Active: tenantList.filter((tenant) => tenant.status === "Active").length,
+      Trial: tenantList.filter((tenant) => tenant.status === "Trial").length,
+      Onboarding: tenantList.filter((tenant) => tenant.status === "Onboarding")
         .length,
-      Suspended: tenants.filter((tenant) => tenant.status === "Suspended")
+      Suspended: tenantList.filter((tenant) => tenant.status === "Suspended")
         .length,
     }),
-    [tenants],
+    [tenantList],
   );
-
-
-  const { data, isLoading, isError, error } = useTenants();
 
   if (isLoading) {
     return (
@@ -84,7 +90,7 @@ export default function TenantDirectory() {
       </div>
 
       <div className="mt-6">
-        <TenantTable data={data?.data ?? []} />
+        <TenantTable data={filteredTenants} />
       </div>
     </PageContainer>
   );

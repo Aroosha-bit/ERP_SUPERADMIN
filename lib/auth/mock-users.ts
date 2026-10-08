@@ -21,13 +21,13 @@ export const MOCK_USERS: MockUserRecord[] = [
 export function findMockUserByCredentials(
   email: string,
   cnic: string,
-  password: string
+  password: string,
 ) {
   return MOCK_USERS.find(
     (user) =>
       user.email.toLowerCase() === email.toLowerCase() &&
       user.cnic === cnic &&
-      user.password === password
+      user.password === password,
   );
 }
 

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
@@ -19,13 +19,16 @@ import { useAuth } from "@/provider/AuthProvider";
 
 export default function LoginForm() {
   const router = useRouter();
-
   const { isAuthenticated, isAuthLoading } = useAuth();
-
   const loginMutation = useLogin();
 
-  const form = useForm<LoginFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    mode: "onSubmit",
     defaultValues: {
       email: "",
       cnic: "",
@@ -39,15 +42,18 @@ export default function LoginForm() {
     }
   }, [isAuthenticated, isAuthLoading, router]);
 
-  function onSubmit(values: LoginFormValues) {
-    loginMutation.mutate(values, {
-      onSuccess: () => {
-        router.replace("/dashboard");
-      },
-    });
+  async function onSubmit(values: LoginFormValues) {
+    try {
+      await loginMutation.mutateAsync(values);
+      router.replace("/dashboard");
+    } catch {
+      // API error is displayed using loginMutation.error.
+    }
   }
 
-  if (isAuthLoading) {
+  const isLoading = isSubmitting || loginMutation.isPending;
+
+  if (isAuthLoading || isAuthenticated) {
     return (
       <div className="w-full max-w-[440px] rounded-[16px] bg-[#F7F7F7] px-5 py-10 text-center sm:px-8 md:px-10">
         <p className="text-sm text-[#001033]">Checking authentication...</p>
@@ -67,73 +73,54 @@ export default function LoginForm() {
         </p>
       </div>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 sm:mt-8">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mt-6 sm:mt-8"
+        noValidate
+      >
         <FieldGroup className="gap-3 sm:gap-4">
-          <Controller
-            name="email"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <Input
-                  {...field}
-                  type="email"
-                  placeholder="Email"
-                  aria-invalid={fieldState.invalid}
-                  className="h-9 w-full text-xs sm:h-10 sm:text-sm"
-                  disabled={loginMutation.isPending}
-                />
+          {/* Email */}
+          <Field data-invalid={!!errors.email}>
+            <Input
+              {...register("email")}
+              type="email"
+              placeholder="Email"
+              aria-invalid={!!errors.email}
+              className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+              disabled={isLoading}
+            />
+            {errors.email && <FieldError errors={[errors.email]} />}
+          </Field>
 
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
+          {/* CNIC */}
+          <Field data-invalid={!!errors.cnic}>
+            <Input
+              {...register("cnic")}
+              inputMode="numeric"
+              placeholder="CNIC Number"
+              maxLength={13}
+              aria-invalid={!!errors.cnic}
+              className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+              disabled={isLoading}
+            />
+            {errors.cnic && <FieldError errors={[errors.cnic]} />}
+          </Field>
 
-          <Controller
-            name="cnic"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <Input
-                  {...field}
-                  inputMode="numeric"
-                  placeholder="CNIC Number"
-                  maxLength={13}
-                  aria-invalid={fieldState.invalid}
-                  className="h-9 w-full text-xs sm:h-10 sm:text-sm"
-                  disabled={loginMutation.isPending}
-                />
-
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-
-          <Controller
-            name="password"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <Input
-                  {...field}
-                  type="password"
-                  placeholder="Password"
-                  aria-invalid={fieldState.invalid}
-                  className="h-9 w-full text-xs sm:h-10 sm:text-sm"
-                  disabled={loginMutation.isPending}
-                />
-
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
+          {/* Password */}
+          <Field data-invalid={!!errors.password}>
+            <Input
+              {...register("password")}
+              type="password" 
+              placeholder="Password"
+              aria-invalid={!!errors.password}
+              className="h-9 w-full text-xs sm:h-10 sm:text-sm"
+              disabled={isLoading}
+            />
+            {errors.password && <FieldError errors={[errors.password]} />}
+          </Field>
         </FieldGroup>
 
+        {/* API Error */}
         {loginMutation.isError && (
           <p role="alert" className="mt-3 text-center text-xs text-red-500">
             {loginMutation.error instanceof Error
@@ -142,6 +129,7 @@ export default function LoginForm() {
           </p>
         )}
 
+        {/* Links */}
         <div className="mt-3 flex items-center justify-between gap-4 text-[10px] sm:text-xs">
           <Link
             href="/forgot-password"
@@ -155,13 +143,14 @@ export default function LoginForm() {
           </Link>
         </div>
 
+        {/* Submit Button */}
         <div className="mt-5 flex justify-center sm:mt-6">
           <Button
             type="submit"
-            disabled={loginMutation.isPending}
+            disabled={isLoading}
             className="h-9 rounded-md bg-auth-background px-5 text-xs text-white hover:bg-[#001033]/90"
           >
-            {loginMutation.isPending ? "Signing In..." : "Sign In"}
+            {isLoading ? "Signing In..." : "Sign In"}
           </Button>
         </div>
       </form>

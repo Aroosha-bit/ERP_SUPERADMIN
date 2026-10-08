@@ -22,9 +22,7 @@ export function clearAccessToken() {
   setAccessToken(null);
 }
 
-export function subscribeToAccessToken(
-  listener: TokenListener
-) {
+export function subscribeToAccessToken(listener: TokenListener) {
   listeners.add(listener);
 
   return () => {

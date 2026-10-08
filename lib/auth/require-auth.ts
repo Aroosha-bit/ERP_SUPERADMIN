@@ -14,7 +14,7 @@ export type AuthenticatedRequestResult =
     };
 
 export async function requireAuth(
-  request: Request
+  request: Request,
 ): Promise<AuthenticatedRequestResult> {
   const authorization = request.headers.get("authorization");
 
@@ -27,18 +27,14 @@ export async function requireAuth(
           message: "Authentication token is required.",
           code: "TOKEN_MISSING",
         },
-        { status: 401 }
+        { status: 401 },
       ),
     };
   }
 
   const [scheme, token, ...extraParts] = authorization.trim().split(/\s+/);
 
-  if (
-    scheme?.toLowerCase() !== "bearer" ||
-    !token ||
-    extraParts.length > 0
-  ) {
+  if (scheme?.toLowerCase() !== "bearer" || !token || extraParts.length > 0) {
     return {
       success: false,
       response: NextResponse.json(
@@ -47,7 +43,7 @@ export async function requireAuth(
           message: "Authorization header is invalid.",
           code: "TOKEN_MALFORMED",
         },
-        { status: 401 }
+        { status: 401 },
       ),
     };
   }
@@ -69,7 +65,7 @@ export async function requireAuth(
             message: "Access token has expired.",
             code: "TOKEN_EXPIRED",
           },
-          { status: 401 }
+          { status: 401 },
         ),
       };
     }
@@ -82,7 +78,7 @@ export async function requireAuth(
           message: "Access token is invalid.",
           code: "TOKEN_INVALID",
         },
-        { status: 401 }
+        { status: 401 },
       ),
     };
   }
