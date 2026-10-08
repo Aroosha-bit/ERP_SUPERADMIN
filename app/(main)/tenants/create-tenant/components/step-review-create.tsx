@@ -1,27 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { TenantCreationPayload } from "@/hooks/tenants/use-tenant-wizard";
-import { useRouter } from "next/navigation";
+import type { TenantCreationPayload } from "@/types/tenant-creation";
 
 interface StepReviewCreateProps {
   payload: TenantCreationPayload;
+  isEditing?: boolean;
   isSubmitting?: boolean;
-  setIsSubmitting?: (isSubmitting: boolean) => void;
+  error?: string | null;
   onBack: () => void;
   handleSubmit: () => void;
 }
 
 export function StepReviewCreate({
   payload,
+  isEditing = false,
   isSubmitting = false,
-  setIsSubmitting = () => {},
+  error,
   onBack,
+  handleSubmit,
 }: StepReviewCreateProps) {
-  const enabledModulesCount = payload.modules.filter(
-    (m) => m.enabledSubModules.length > 0 || m.moduleId,
-  ).length;
+  const enabledModulesCount = payload.modules.length;
 
   const currencyCode = payload.organization.currency
     ? payload.organization.currency.split(" ")[0]
@@ -78,28 +77,17 @@ export function StepReviewCreate({
       value: payload.organization.language || "—",
     },
   ];
-  const router = useRouter();
-  const handleSubmit = async () => {
-    try {
-      setIsSubmitting(true);
-
-      // Later this will be your TanStack Query mutation/API call.
-      // await createTenant(payload);
-
-      router.push("/tenants/success");
-    } catch (error) {
-      console.error("Failed to create tenant:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
   return (
     <section className="rounded-2xl bg-white px-5 py-7 shadow-[0_1px_3px_rgba(15,23,42,0.03)] sm:px-8 sm:py-8 border border-slate-100">
       {/* Header */}
       <div className="mb-6">
-        <h2 className="text-base font-bold text-[#101d3b]">Review & Create</h2>
+        <h2 className="text-base font-bold text-[#101d3b]">
+          {isEditing ? "Review & Save" : "Review & Create"}
+        </h2>
         <p className="mt-1 text-sm text-[#4b5568]">
-          Confirm the details below before provisioning.
+          {isEditing
+            ? "Confirm the updated tenant details before saving."
+            : "Confirm the details below before provisioning."}
         </p>
       </div>
 
@@ -117,6 +105,11 @@ export function StepReviewCreate({
           </div>
         ))}
       </div>
+      {error && (
+        <p role="alert" className="mt-5 rounded-md bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </p>
+      )}
 
       {/* Action Buttons */}
       <div className="mt-8 flex items-center justify-between border-t border-slate-100 pt-5">
@@ -134,7 +127,9 @@ export function StepReviewCreate({
           className="h-10 bg-[#020d2b] px-6 text-sm font-semibold text-white hover:bg-[#142342] shadow-xs disabled:opacity-50 cursor-pointer"
           onClick={handleSubmit}
         >
-          {isSubmitting ? "Provisioning..." : "Create Tenant"}
+          {isSubmitting
+            ? isEditing ? "Saving..." : "Provisioning..."
+            : isEditing ? "Save Changes" : "Create Tenant"}
         </Button>
       </div>
     </section>

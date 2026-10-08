@@ -16,6 +16,7 @@ import {
   type LoginFormValues,
 } from "@/lib/validations/auth.schema";
 import { useAuth } from "@/provider/AuthProvider";
+import { AuthLoadingSkeleton } from "@/components/common/loading-skeletons";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -49,9 +50,7 @@ export default function LoginForm() {
 
   if (isAuthLoading) {
     return (
-      <div className="w-full max-w-[440px] rounded-[16px] bg-[#F7F7F7] px-5 py-10 text-center sm:px-8 md:px-10">
-        <p className="text-sm text-[#001033]">Checking authentication...</p>
-      </div>
+      <AuthLoadingSkeleton />
     );
   }
 

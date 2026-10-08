@@ -1,0 +1,475 @@
+{
+  "tenants": [
+    {
+      "id": "plra",
+      "name": "Punjab Land Records Authority",
+      "slug": "plra",
+      "plan": "Enterprise",
+      "status": "Active",
+      "modulesEnabled": 8,
+      "totalModules": 8,
+      "createdAt": "2026-03-02",
+      "lastActive": "2026-08-23",
+      "region": "Pakistan — Punjab",
+      "financialYearStart": "July",
+      "baseCurrency": "PKR",
+      "defaultLanguage": "English",
+      "primaryAdmin": "Ayesha Malik",
+      "adminEmail": "ayesha.malik@plra.gov.pk"
+    },
+    {
+      "id": "bor",
+      "name": "Board of Revenue",
+      "slug": "bor",
+      "plan": "Growth",
+      "status": "Active",
+      "modulesEnabled": 6,
+      "totalModules": 8,
+      "createdAt": "2026-03-19",
+      "lastActive": "2026-08-22",
+      "region": "Pakistan — Punjab",
+      "financialYearStart": "July",
+      "baseCurrency": "PKR",
+      "defaultLanguage": "English",
+      "primaryAdmin": "Saud Ahmed",
+      "adminEmail": "saud.ahmed@bor.gov.pk"
+    },
+    {
+      "id": "irrigation",
+      "name": "Irrigation",
+      "slug": "irr",
+      "plan": "Starter",
+      "status": "Onboarding",
+      "modulesEnabled": 3,
+      "totalModules": 8,
+      "createdAt": "2026-07-08",
+      "lastActive": "2026-08-20",
+      "region": "Pakistan — Punjab",
+      "financialYearStart": "July",
+      "baseCurrency": "PKR",
+      "defaultLanguage": "English",
+      "primaryAdmin": "Ali Khan",
+      "adminEmail": "ali.khan@irr.gov.pk"
+    },
+    {
+      "id": "pera",
+      "name": "PERA",
+      "slug": "pera",
+      "plan": "Starter",
+      "status": "Suspended",
+      "modulesEnabled": 2,
+      "totalModules": 8,
+      "createdAt": "2026-07-30",
+      "lastActive": "2026-08-19",
+      "region": "Pakistan — Punjab",
+      "financialYearStart": "July",
+      "baseCurrency": "PKR",
+      "defaultLanguage": "English",
+      "primaryAdmin": "Usman Ali",
+      "adminEmail": "usman.ali@pera.gov.pk"
+    },
+    {
+      "id": "excise",
+      "name": "Excise & Taxation",
+      "slug": "excise",
+      "plan": "Enterprise",
+      "status": "Active",
+      "modulesEnabled": 7,
+      "totalModules": 8,
+      "createdAt": "2026-05-12",
+      "lastActive": "2026-08-18",
+      "region": "Pakistan — Punjab",
+      "financialYearStart": "July",
+      "baseCurrency": "PKR",
+      "defaultLanguage": "English",
+      "primaryAdmin": "Hassan Ahmed",
+      "adminEmail": "hassan@excise.gov.pk"
+    },
+    {
+      "id": "pnd",
+      "name": "Planning & Development",
+      "slug": "pnd",
+      "plan": "Growth",
+      "status": "Trial",
+      "modulesEnabled": 5,
+      "totalModules": 8,
+      "createdAt": "2026-06-14",
+      "lastActive": "2026-08-17",
+      "region": "Pakistan — Punjab",
+      "financialYearStart": "July",
+      "baseCurrency": "PKR",
+      "defaultLanguage": "English",
+      "primaryAdmin": "Sara Khan",
+      "adminEmail": "sara@pnd.gov.pk"
+    },
+    {
+      "id": "local-government",
+      "name": "Local Government",
+      "slug": "lg",
+      "plan": "Starter",
+      "status": "Active",
+      "modulesEnabled": 4,
+      "totalModules": 8,
+      "createdAt": "2026-04-21",
+      "lastActive": "2026-08-15",
+      "region": "Pakistan — Punjab",
+      "financialYearStart": "July",
+      "baseCurrency": "PKR",
+      "defaultLanguage": "English",
+      "primaryAdmin": "Hamza Ali",
+      "adminEmail": "hamza@lg.gov.pk"
+    },
+    {
+      "id": "Ifuhv6vmI8A",
+      "name": "ughjgh",
+      "slug": "jkhjb",
+      "plan": "Growth",
+      "status": "Onboarding",
+      "modulesEnabled": 1,
+      "totalModules": 7,
+      "createdAt": "2026-10-08",
+      "lastActive": "2026-10-08",
+      "region": "United Kingdom — Multan Road, Lahore",
+      "financialYearStart": "December",
+      "baseCurrency": "GBP",
+      "defaultLanguage": "English",
+      "primaryAdmin": "ghkjfgh",
+      "adminEmail": "arooshamalik1018@gmail.com",
+      "ntn": "8978",
+      "address": "Multan Road, Lahore",
+      "country": "United Kingdom",
+      "creationData": {
+        "organization": {
+          "legalName": "ughjgh",
+          "slug": "jkhjb",
+          "ntn": "8978",
+          "address": "Multan Road, Lahore",
+          "country": "United Kingdom",
+          "financialYear": "December",
+          "currency": "GBP — British Pound",
+          "language": "English"
+        },
+        "businessUnit": {
+          "type": "Field Office"
+        },
+        "hierarchy": [],
+        "plan": "Growth",
+        "totalModules": 7,
+        "modules": [
+          {
+            "moduleId": "asset",
+            "moduleName": "Asset Management",
+            "enabledSubModules": []
+          }
+        ],
+        "adminUser": {
+          "fullName": "ghkjfgh",
+          "email": "arooshamalik1018@gmail.com",
+          "role": "Tenant Administrator"
+        },
+        "branding": {
+          "primaryColor": "#8b5cf6",
+          "logoUrl": "",
+          "logoFileName": ""
+        }
+      }
+    }
+  ],
+  "tenantModules": [
+    {
+      "id": "hr",
+      "tenantId": "plra",
+      "name": "HR",
+      "enabled": true
+    },
+    {
+      "id": "finance",
+      "tenantId": "plra",
+      "name": "Finance",
+      "enabled": true
+    },
+    {
+      "id": "administration",
+      "tenantId": "plra",
+      "name": "Administration",
+      "enabled": true
+    },
+    {
+      "id": "procurement",
+      "tenantId": "plra",
+      "name": "Procurement",
+      "enabled": true
+    },
+    {
+      "id": "inventory",
+      "tenantId": "plra",
+      "name": "Inventory Management",
+      "enabled": true
+    },
+    {
+      "id": "pr",
+      "tenantId": "plra",
+      "name": "PR & Coordination Wing",
+      "enabled": true
+    },
+    {
+      "id": "assets",
+      "tenantId": "plra",
+      "name": "Asset Management",
+      "enabled": true
+    },
+    {
+      "id": "coordination",
+      "tenantId": "plra",
+      "name": "Coordination",
+      "enabled": true
+    }
+  ],
+  "tenantUsers": [
+    {
+      "id": "user-1",
+      "tenantId": "plra",
+      "name": "Saud Ahmed",
+      "initials": "SA",
+      "email": "saud.ahmed@plra.gov.pk",
+      "role": "Super Admin",
+      "status": "Active",
+      "isAdmin": true
+    },
+    {
+      "id": "user-2",
+      "tenantId": "plra",
+      "name": "Ayesha Malik",
+      "initials": "AM",
+      "email": "ayesha.malik@plra.gov.pk",
+      "role": "Tenant Administrator",
+      "status": "Active"
+    },
+    {
+      "id": "user-3",
+      "tenantId": "plra",
+      "name": "Bilal Ahmed",
+      "initials": "BA",
+      "email": "bilal.ahmed@plra.gov.pk",
+      "role": "Finance Configurator",
+      "status": "Active"
+    },
+    {
+      "id": "user-4",
+      "tenantId": "plra",
+      "name": "Sana Tariq",
+      "initials": "ST",
+      "email": "sana.tariq@plra.gov.pk",
+      "role": "Auditor / Viewer",
+      "status": "Invited"
+    }
+  ],
+  "tenantActivity": [
+    {
+      "id": "activity-1",
+      "tenantId": "plra",
+      "date": "2026-02-11",
+      "time": "10:02",
+      "description": "Tenant Created On Enterprise Plan"
+    },
+    {
+      "id": "activity-2",
+      "tenantId": "plra",
+      "date": "2026-04-30",
+      "time": "14:15",
+      "description": "Plan Confirmed — Enterprise (All 8 Modules)"
+    },
+    {
+      "id": "activity-3",
+      "tenantId": "plra",
+      "date": "2026-08-24",
+      "time": "09:12",
+      "description": "Support Impersonation — Ticket #4021"
+    }
+  ],
+  "businessUnits": [
+    {
+      "id": "head_office",
+      "title": "Head Office",
+      "description": "Central operations and administration.",
+      "icon": "building"
+    },
+    {
+      "id": "field_office",
+      "title": "Field Office",
+      "description": "Regional or on-site operations.",
+      "icon": "map"
+    },
+    {
+      "id": "other",
+      "title": "Other",
+      "description": "Define a custom business unit.",
+      "icon": "building"
+    }
+  ],
+  "moduleCatalog": [
+    {
+      "id": "hr",
+      "title": "HR",
+      "subModules": [
+        {
+          "id": "hr-opt-1",
+          "name": "Attendance & Leaves"
+        },
+        {
+          "id": "hr-opt-2",
+          "name": "Payroll Management"
+        },
+        {
+          "id": "hr-opt-3",
+          "name": "Recruitment & Onboarding"
+        },
+        {
+          "id": "hr-opt-4",
+          "name": "Performance Appraisals"
+        },
+        {
+          "id": "hr-opt-5",
+          "name": "Employee Directory"
+        }
+      ]
+    },
+    {
+      "id": "finance",
+      "title": "Finance",
+      "subModules": [
+        {
+          "id": "fin-opt-1",
+          "name": "General Ledger"
+        },
+        {
+          "id": "fin-opt-2",
+          "name": "Accounts Payable"
+        },
+        {
+          "id": "fin-opt-3",
+          "name": "Accounts Receivable"
+        },
+        {
+          "id": "fin-opt-4",
+          "name": "Taxation & Compliance"
+        },
+        {
+          "id": "fin-opt-5",
+          "name": "Financial Audits"
+        }
+      ]
+    },
+    {
+      "id": "administration",
+      "title": "Administration",
+      "subModules": [
+        {
+          "id": "adm-opt-1",
+          "name": "Facility Management"
+        },
+        {
+          "id": "adm-opt-2",
+          "name": "Fleet & Transport"
+        },
+        {
+          "id": "adm-opt-3",
+          "name": "Office Supplies"
+        },
+        {
+          "id": "adm-opt-4",
+          "name": "Document Archiving"
+        }
+      ]
+    },
+    {
+      "id": "procurement",
+      "title": "Procurement",
+      "subModules": [
+        {
+          "id": "prc-opt-1",
+          "name": "Vendor Management"
+        },
+        {
+          "id": "prc-opt-2",
+          "name": "Purchase Orders"
+        },
+        {
+          "id": "prc-opt-3",
+          "name": "Tendering & RFQ"
+        },
+        {
+          "id": "prc-opt-4",
+          "name": "Contract Tracking"
+        }
+      ]
+    },
+    {
+      "id": "inventory",
+      "title": "Inventory Management",
+      "subModules": [
+        {
+          "id": "inv-opt-1",
+          "name": "Stock Monitoring"
+        },
+        {
+          "id": "inv-opt-2",
+          "name": "Warehouse Storage"
+        },
+        {
+          "id": "inv-opt-3",
+          "name": "Material Requisition"
+        },
+        {
+          "id": "inv-opt-4",
+          "name": "Batch Tracking"
+        }
+      ]
+    },
+    {
+      "id": "asset",
+      "title": "Asset Management",
+      "subModules": [
+        {
+          "id": "ast-opt-1",
+          "name": "Fixed Assets Register"
+        },
+        {
+          "id": "ast-opt-2",
+          "name": "Asset Depreciation"
+        },
+        {
+          "id": "ast-opt-3",
+          "name": "Maintenance & Repairs"
+        },
+        {
+          "id": "ast-opt-4",
+          "name": "Asset Disposal"
+        }
+      ]
+    },
+    {
+      "id": "pr_coordination",
+      "title": "PR & Coordination Wing",
+      "subModules": [
+        {
+          "id": "pr-opt-1",
+          "name": "Media Relations"
+        },
+        {
+          "id": "pr-opt-2",
+          "name": "Citizen Queries"
+        },
+        {
+          "id": "pr-opt-3",
+          "name": "Protocol & Events"
+        },
+        {
+          "id": "pr-opt-4",
+          "name": "Press Releases"
+        }
+      ]
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

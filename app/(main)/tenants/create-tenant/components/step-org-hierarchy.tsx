@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { HierarchyTreeNode, OrgNodeType } from "@/hooks/tenants/use-tenant-wizard";
+import type { HierarchyTreeNode, OrgNodeType } from "@/types/tenant-creation";
 
 function getNodeTypeConfig(type: string) {
   switch (type) {

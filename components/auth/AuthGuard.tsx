@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/provider/AuthProvider";
+import { AppLoadingSkeleton } from "@/components/common/loading-skeletons";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -17,13 +18,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [isAuthLoading, isAuthenticated, router]);
 
   if (isAuthLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p className="text-sm text-muted-foreground">
-          Checking authentication...
-        </p>
-      </div>
-    );
+    return <AppLoadingSkeleton />;
   }
 
   if (!isAuthenticated) {

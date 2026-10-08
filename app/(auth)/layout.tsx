@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/provider/AuthProvider";
+import { AuthLoadingSkeleton } from "@/components/common/loading-skeletons";
 
 export default function AuthLayout({
   children,
@@ -22,8 +23,14 @@ export default function AuthLayout({
 
   if (isAuthLoading) {
     return (
-      <main className="flex min-h-dvh items-center justify-center bg-[#001033]">
-        <p className="text-sm text-white">Checking authentication...</p>
+      <main className="relative min-h-dvh overflow-hidden bg-[#001033]">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-0 left-0 h-[65%] w-full bg-white/5 sm:h-[75%] md:h-[85%] lg:h-full"
+        />
+        <div className="relative z-10">
+          <AuthLoadingSkeleton />
+        </div>
       </main>
     );
   }
