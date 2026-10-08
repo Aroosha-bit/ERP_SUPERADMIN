@@ -34,6 +34,7 @@ const sidebarSections: SidebarSection[] = [
         title: "Dashboard",
         href: "/dashboard",
         icon: LayoutDashboard,
+        // alloedRoles: ["super-admin", "admin", "user"],
       },
       {
         title: "Tenant Directory",

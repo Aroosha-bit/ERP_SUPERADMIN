@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { MoreVertical } from "lucide-react";
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import {
   flexRender,
   useTable,
@@ -14,6 +15,13 @@ import type { Tenant } from "@/types/tenant";
 import TenantStatusBadge from "./TenantStatusBadge";
 import ModulesIndicator from "./ModulesIndicator";
 import TenantPagination from "./TenantPagination";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useDeleteTenantMutation } from "@/hooks/tenants/use-tenants";
 
 const features = tableFeatures({
   rowPaginationFeature,
@@ -26,6 +34,16 @@ interface Props {
 
 export default function TenantTable({ data }: Props) {
   const router = useRouter();
+  const deleteTenant = useDeleteTenantMutation();
+  const handleDelete = (tenant: Tenant) => {
+    if (
+      !window.confirm(`Delete tenant "${tenant.name}"? This cannot be undone.`)
+    )
+      return;
+    deleteTenant.mutate(tenant.id, {
+      onError: (error) => window.alert(error.message),
+    });
+  };
 
   const columns: ColumnDef<typeof features, Tenant>[] = [
     {
@@ -66,14 +84,43 @@ export default function TenantTable({ data }: Props) {
     {
       id: "actions",
       header: "",
-      cell: () => (
-        <button
-          type="button"
-          onClick={(e) => e.stopPropagation()}
-          className="rounded-md p-2 text-slate-500 hover:bg-slate-100"
-        >
-          <MoreVertical size={17} />
-        </button>
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <button
+                type="button"
+                aria-label={`Actions for ${row.original.name}`}
+                onClick={(event) => event.stopPropagation()}
+                className="rounded-md p-2 text-slate-500 hover:bg-slate-100"
+              />
+            }
+          >
+            <MoreVertical size={17} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  `/tenants/create-tenant/organization-basics?tenantId=${encodeURIComponent(row.original.id)}`,
+                )
+              }
+              className="flex items-center gap-2 text-blue-600 hover:bg-none cursor-pointer"
+            >
+              <Pencil size={15} />
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => handleDelete(row.original)}
+              className="flex items-center gap-2 text-red-600 hover:bg-none cursor-pointer"
+            >
+              <Trash2 size={15} />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ),
     },
   ];
@@ -133,6 +180,16 @@ export default function TenantTable({ data }: Props) {
                 ))}
               </tr>
             ))}
+            {table.getRowModel().rows.length === 0 && (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className="px-5 py-10 text-center text-sm text-slate-500"
+                >
+                  No tenants match this filter.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

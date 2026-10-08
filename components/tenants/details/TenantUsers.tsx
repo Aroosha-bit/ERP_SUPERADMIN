@@ -2,10 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { CircleAlert, ChevronDown, Plus } from "lucide-react";
-import { tenantUsers } from "@/data/tenants";
+import { useTenantUsers } from "@/hooks/tenants/use-tenants";
+import { TenantResourceSkeleton } from "@/components/common/loading-skeletons";
 
-export default function TenantUsers() {
+export default function TenantUsers({ tenantId }: { tenantId: string }) {
   const [role, setRole] = useState("All");
+  const { data: tenantUsers = [], isLoading, isError, error } = useTenantUsers(tenantId);
 
   const admins = tenantUsers.filter((user) => user.isAdmin);
 
@@ -15,7 +17,7 @@ export default function TenantUsers() {
     if (role === "All") return nonAdmins;
 
     return nonAdmins.filter((user) => user.role === role);
-  }, [role]);
+  }, [role, tenantUsers]);
 
   const roles = ["All", ...Array.from(new Set(tenantUsers.filter((user) => !user.isAdmin).map((user) => user.role)))];
 
@@ -46,6 +48,8 @@ export default function TenantUsers() {
       </div>
 
       <div className="mt-6 overflow-hidden rounded-[18px] bg-white">
+        {isLoading && <TenantResourceSkeleton />}
+        {isError && <p role="alert" className="p-6 text-sm text-red-700">{error.message}</p>}
         <div className="overflow-x-auto">
           <table className="w-full min-w-[600px]">
             <thead>
@@ -56,7 +60,7 @@ export default function TenantUsers() {
             </thead>
 
             <tbody>
-              {admins.map((admin) => (
+              {!isLoading && !isError && admins.map((admin) => (
                 <tr key={admin.id}>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -74,6 +78,8 @@ export default function TenantUsers() {
       </div>
 
       <div className="mt-5 overflow-hidden rounded-[18px] bg-white">
+        {isLoading && <TenantResourceSkeleton />}
+        {isError && <p role="alert" className="p-6 text-sm text-red-700">{error.message}</p>}
         <div className="overflow-x-auto">
           <table className="w-full min-w-[850px]">
             <thead>
@@ -86,7 +92,7 @@ export default function TenantUsers() {
             </thead>
 
             <tbody>
-              {users.map((user) => (
+              {!isLoading && !isError && users.map((user) => (
                 <tr key={user.id} className="border-b border-slate-200 last:border-b-0">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -104,7 +110,7 @@ export default function TenantUsers() {
                 </tr>
               ))}
 
-              {users.length === 0 && (
+              {!isLoading && !isError && users.length === 0 && (
                 <tr>
                   <td colSpan={4} className="px-6 py-10 text-center text-sm text-slate-500">No users found for this role.</td>
                 </tr>

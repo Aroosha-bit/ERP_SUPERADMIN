@@ -2,23 +2,24 @@
 
 import { useState } from "react";
 import { CircleAlert } from "lucide-react";
-import { tenantModules } from "@/data/tenants";
 import { Switch } from "@/components/ui/switch";
+import { useTenantModules, useUpdateTenantModuleMutation } from "@/hooks/tenants/use-tenants";
+import { TenantResourceSkeleton } from "@/components/common/loading-skeletons";
 
-export default function TenantModules() {
+export default function TenantModules({ tenantId }: { tenantId: string }) {
   const [supportOverride, setSupportOverride] = useState(false);
-  const [modules, setModules] = useState(tenantModules);
+  const { data: modules = [], isLoading, isError, error } = useTenantModules(tenantId);
+  const updateModule = useUpdateTenantModuleMutation(tenantId);
 
   function toggleModule(moduleId: string) {
     if (!supportOverride) return;
-
-    setModules((current) =>
-      current.map((module) =>
-        module.id === moduleId
-          ? { ...module, enabled: !module.enabled }
-          : module,
-      ),
-    );
+    const selectedModule = modules.find((item) => item.id === moduleId);
+    if (selectedModule) {
+      updateModule.mutate({
+        moduleId,
+        enabled: !selectedModule.enabled,
+      });
+    }
   }
 
   return (
@@ -46,6 +47,13 @@ export default function TenantModules() {
       </div>
 
       <div className="mt-6 overflow-hidden rounded-[18px] bg-white">
+        {isLoading && <TenantResourceSkeleton />}
+        {isError && <p role="alert" className="p-6 text-sm text-red-700">{error.message}</p>}
+        {updateModule.isError && (
+          <p role="alert" className="p-4 text-sm text-red-700">
+            {updateModule.error.message}
+          </p>
+        )}
         <div className="overflow-x-auto">
           <table className="w-full min-w-[550px]">
             <thead>
@@ -60,7 +68,7 @@ export default function TenantModules() {
             </thead>
 
             <tbody>
-              {modules.map((module) => (
+              {!isLoading && !isError && modules.map((module) => (
                 <tr
                   key={module.id}
                   className="border-b border-slate-200 last:border-b-0"
@@ -72,12 +80,15 @@ export default function TenantModules() {
                   <td className="px-6 py-4">
                     <Switch
                       checked={module.enabled}
-                      disabled={!supportOverride}
+                      disabled={!supportOverride || updateModule.isPending}
                       onCheckedChange={() => toggleModule(module.id)}
                     />
                   </td>
                 </tr>
               ))}
+              {!isLoading && !isError && modules.length === 0 && (
+                <tr><td colSpan={2} className="px-6 py-10 text-center text-sm text-slate-500">No modules found.</td></tr>
+              )}
             </tbody>
           </table>
         </div>
