@@ -3,6 +3,8 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { Filter, Plus } from "lucide-react";
+// import { tenants } from "@/data/tenants";
+import type { TenantStatus } from "@/types/tenant";
 import type { TenantDetails } from "@/types/tenant";
 import { useDispatch, useSelector } from "react-redux";
 import PageContainer from "@/components/common/page-container/PageContainer";
@@ -30,7 +32,7 @@ export default function TenantDirectory() {
       Onboarding: tenants.filter((tenant) => tenant.status === "Onboarding").length,
       Suspended: tenants.filter((tenant) => tenant.status === "Suspended").length,
     }),
-    [tenants],
+    [tenantList],
   );
   const filteredTenants = filter === "All"
     ? tenants

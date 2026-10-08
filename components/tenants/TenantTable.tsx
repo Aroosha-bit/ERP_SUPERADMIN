@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { MoreVertical } from "lucide-react";
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import {
   flexRender,

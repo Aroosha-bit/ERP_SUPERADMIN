@@ -1,20 +1,13 @@
 "use client";
 
-import {
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { Provider as ReduxProvider } from "react-redux";
 
 import { AuthProvider } from "@/provider/AuthProvider";
 import { store } from "@/store/store";
 
-export default function Provider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Provider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -27,7 +20,7 @@ export default function Provider({
             retry: false,
           },
         },
-      })
+      }),
   );
 
   return (

@@ -27,7 +27,7 @@ function getRefreshSecret() {
 }
 
 export async function createAccessToken(
-  payload: Omit<AccessTokenPayload, "tokenType">
+  payload: Omit<AccessTokenPayload, "tokenType">,
 ) {
   return new SignJWT({
     email: payload.email,
@@ -45,14 +45,13 @@ export async function createAccessToken(
     .setAudience(AUTH_CONFIG.audience)
     .setIssuedAt()
     .setExpirationTime(
-      Math.floor(Date.now() / 1000) +
-        AUTH_CONFIG.accessTokenExpiresInSeconds
+      Math.floor(Date.now() / 1000) + AUTH_CONFIG.accessTokenExpiresInSeconds,
     )
     .sign(getAccessSecret());
 }
 
 export async function createRefreshToken(
-  payload: Omit<RefreshTokenPayload, "tokenType">
+  payload: Omit<RefreshTokenPayload, "tokenType">,
 ) {
   return new SignJWT({
     jti: payload.jti,
@@ -67,14 +66,13 @@ export async function createRefreshToken(
     .setAudience(AUTH_CONFIG.audience)
     .setIssuedAt()
     .setExpirationTime(
-      Math.floor(Date.now() / 1000) +
-        AUTH_CONFIG.refreshTokenExpiresInSeconds
+      Math.floor(Date.now() / 1000) + AUTH_CONFIG.refreshTokenExpiresInSeconds,
     )
     .sign(getRefreshSecret());
 }
 
 export async function verifyAccessToken(
-  token: string
+  token: string,
 ): Promise<AccessTokenPayload & JWTPayload> {
   const { payload } = await jwtVerify(token, getAccessSecret(), {
     issuer: AUTH_CONFIG.issuer,
@@ -96,7 +94,7 @@ export async function verifyAccessToken(
 }
 
 export async function verifyRefreshToken(
-  token: string
+  token: string,
 ): Promise<RefreshTokenPayload & JWTPayload> {
   const { payload } = await jwtVerify(token, getRefreshSecret(), {
     issuer: AUTH_CONFIG.issuer,
