@@ -13,7 +13,7 @@ import { useLogin } from "@/hooks/auth/useLogin";
 import {
   loginSchema,
   type LoginFormValues,
-} from "@/lib/validations/auth.schema";
+} from "@/lib/schemas/auth.schema";
 import { useAuth } from "@/provider/AuthProvider";
 
 export default function LoginForm() {

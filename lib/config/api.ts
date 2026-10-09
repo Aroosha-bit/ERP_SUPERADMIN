@@ -4,7 +4,7 @@ export const API_MODE: ApiMode =
   process.env.NEXT_PUBLIC_API_MODE === "backend" ? "backend" : "mock";
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_BASE_URL1 ||
   (API_MODE === "mock" ? "http://localhost:3001" : "");
 
 export function getApiUrl(path: string): string {

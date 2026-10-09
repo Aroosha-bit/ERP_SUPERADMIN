@@ -6,14 +6,14 @@
       "slug": "plra",
       "plan": "Enterprise",
       "status": "Active",
-      "modulesEnabled": 8,
+      "modulesEnabled": 7,
       "totalModules": 7,
       "createdAt": "2026-03-02",
-      "lastActive": "2026-10-08",
+      "lastActive": "2026-10-09",
       "region": "Pakistan — Pakistan — Punjab",
       "financialYearStart": "July",
       "baseCurrency": "PKR",
-      "defaultLanguage": "English",
+      "defaultLanguage": "Urdu",
       "primaryAdmin": "Saud Ahmed",
       "adminEmail": "saud.ahmed@plra.gov.pk",
       "ntn": "111",
@@ -28,7 +28,7 @@
           "country": "Pakistan",
           "financialYear": "July",
           "currency": "PKR — Pakistani Rupee",
-          "language": "English"
+          "language": "Urdu"
         },
         "businessUnit": {
           "type": "Head Office"
@@ -65,11 +65,6 @@
           {
             "moduleId": "pr_coordination",
             "moduleName": "PR & Coordination Wing",
-            "enabledSubModules": []
-          },
-          {
-            "moduleId": "asset",
-            "moduleName": "Asset Management",
             "enabledSubModules": []
           },
           {
@@ -302,6 +297,64 @@
           "primaryColor": "#0ea5e9",
           "logoUrl": "",
           "logoFileName": ""
+        }
+      }
+    },
+    {
+      "id": "kkzU4kBQbr8",
+      "name": "vvgfbgb",
+      "slug": "bgbbg",
+      "plan": "Growth",
+      "status": "Onboarding",
+      "modulesEnabled": 1,
+      "totalModules": 7,
+      "createdAt": "2026-10-09",
+      "lastActive": "2026-10-09",
+      "region": "United States — Multan Road, Lahore",
+      "financialYearStart": "October",
+      "baseCurrency": "AED",
+      "defaultLanguage": "English",
+      "primaryAdmin": "hjhgfh",
+      "adminEmail": "hgfh@gmail.com",
+      "ntn": "56",
+      "address": "Multan Road, Lahore",
+      "country": "United States",
+      "creationData": {
+        "organization": {
+          "legalName": "vvgfbgb",
+          "slug": "bgbbg",
+          "ntn": "56",
+          "address": "Multan Road, Lahore",
+          "country": "United States",
+          "financialYear": "October",
+          "currency": "AED — UAE Dirham",
+          "language": "English"
+        },
+        "businessUnit": {
+          "type": "Field Office"
+        },
+        "hierarchy": [],
+        "plan": "Growth",
+        "totalModules": 7,
+        "modules": [
+          {
+            "moduleId": "administration",
+            "moduleName": "Administration",
+            "enabledSubModules": [
+              "adm-opt-2",
+              "adm-opt-3"
+            ]
+          }
+        ],
+        "adminUser": {
+          "fullName": "hjhgfh",
+          "email": "hgfh@gmail.com",
+          "role": "Tenant Administrator"
+        },
+        "branding": {
+          "primaryColor": "#10b981",
+          "logoUrl": "",
+          "logoFileName": "image 7.svg"
         }
       }
     }
