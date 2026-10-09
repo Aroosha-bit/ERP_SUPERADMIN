@@ -74,7 +74,7 @@ export function DatePicker({
             onChange?.(date);
             setOpen(false);
           }}
-          initialFocus
+          
         />
       </PopoverContent>
     </Popover>

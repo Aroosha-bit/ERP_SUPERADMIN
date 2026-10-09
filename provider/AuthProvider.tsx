@@ -10,20 +10,22 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 
-import type { AuthUser } from "@/lib/auth/auth-types";
+import type { AuthSession, AuthUser } from "@/lib/auth/auth-types";
 import {
-  clearAccessToken,
-  setAccessToken,
-  subscribeToAccessToken,
+  clearSession,
+  getStoredSession,
+  isSessionValid,
+  saveSession,
 } from "@/lib/auth/token-store";
-import { logoutUser, refreshAccessToken } from "@/services/auth/auth-api";
 
 type AuthContextValue = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isAuthLoading: boolean;
-  establishSession: (accessToken: string, user: AuthUser) => void;
-  logout: () => Promise<void>;
+  establishSession: (session: AuthSession) => void;
+  logout: () => void;
+  hasPermission: (permission: string) => boolean;
+  hasRole: (role: string) => boolean;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -31,88 +33,84 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
-  const [user, setUser] = useState<AuthUser | null>(null);
-
-  const [hasAccessToken, setHasAccessToken] = useState(false);
-
+  const [session, setSession] = useState<AuthSession | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  const establishSession = useCallback(
-    (accessToken: string, authenticatedUser: AuthUser) => {
-      setAccessToken(accessToken);
-      setUser(authenticatedUser);
-      setHasAccessToken(true);
-    },
-    [],
-  );
-
-  const clearSession = useCallback(() => {
-    clearAccessToken();
-    setUser(null);
-    setHasAccessToken(false);
-  }, []);
-
-  useEffect(() => {
-    return subscribeToAccessToken((token) => {
-      setHasAccessToken(Boolean(token));
-
-      if (!token) {
-        setUser(null);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function restoreSession() {
-      try {
-        const response = await refreshAccessToken();
-
-        if (cancelled) {
-          return;
-        }
-
-        establishSession(response.accessToken, response.user);
-      } catch {
-        if (!cancelled) {
-          clearSession();
-        }
-      } finally {
-        if (!cancelled) {
-          setIsAuthLoading(false);
-        }
-      }
+  const establishSession = useCallback((newSession: AuthSession) => {
+    if (!isSessionValid(newSession)) {
+      throw new Error("Cannot establish an expired session.");
     }
 
-    restoreSession();
+    saveSession(newSession);
+    setSession(newSession);
+  }, []);
+
+  const logout = useCallback(() => {
+    clearSession();
+    setSession(null);
+    router.replace("/login");
+  }, [router]);
+
+  useEffect(() => {
+    const syncSession = () => {
+      const storedSession = getStoredSession();
+
+      setSession(storedSession);
+      setIsAuthLoading(false);
+    };
+
+    syncSession();
+
+    window.addEventListener("erp-auth-changed", syncSession);
+    window.addEventListener("focus", syncSession);
 
     return () => {
-      cancelled = true;
+      window.removeEventListener("erp-auth-changed", syncSession);
+      window.removeEventListener("focus", syncSession);
     };
-  }, [clearSession, establishSession]);
+  }, []);
 
-  const logout = useCallback(async () => {
-    try {
-      await logoutUser();
-    } catch (error) {
-      console.error("Logout request failed:", error);
-    } finally {
+  useEffect(() => {
+    if (!session) return;
+
+    const expiry = Date.parse(session.expiresOn);
+    const remaining = expiry - Date.now();
+
+    if (remaining <= 0) {
       clearSession();
-      router.replace("/login");
-      router.refresh();
+      setSession(null);
+      return;
     }
-  }, [clearSession, router]);
+
+    const timer = window.setTimeout(
+      () => {
+        clearSession();
+        setSession(null);
+      },
+      Math.min(remaining, 2147483647),
+    );
+
+    return () => window.clearTimeout(timer);
+  }, [session]);
+
+  useEffect(() => {
+    if (!isAuthLoading && !session && window.location.pathname !== "/login") {
+      // AuthGuard handles protected-page redirection.
+    }
+  }, [isAuthLoading, session]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      user,
-      isAuthenticated: Boolean(user) && hasAccessToken,
+      user: session?.user ?? null,
+      isAuthenticated: isSessionValid(session),
       isAuthLoading,
       establishSession,
       logout,
+      hasPermission: (permission) =>
+        session?.user.permissions.includes(permission) ?? false,
+      hasRole: (role) => session?.user.roles.includes(role) ?? false,
     }),
-    [user, hasAccessToken, isAuthLoading, establishSession, logout],
+    [session, isAuthLoading, establishSession, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

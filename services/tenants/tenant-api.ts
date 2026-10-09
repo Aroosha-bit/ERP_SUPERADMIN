@@ -12,9 +12,7 @@ import {
   tenantUserSchema,
   tenantUsersSchema,
 } from "@/lib/schemas/api";
-import {
-  tenantCreationPayloadSchema,
-} from "@/lib/schemas/api";
+import { tenantCreationPayloadSchema } from "@/lib/schemas/api";
 import type {
   BusinessUnitOption,
   ModuleCatalogItem,
@@ -75,6 +73,8 @@ export async function getTenants(): Promise<TenantDetails[]> {
 export async function getTenant(tenantId: string): Promise<TenantDetails> {
   return request(`/tenants/${encodeURIComponent(tenantId)}`, tenantSchema);
 }
+
+
 
 export async function getTenantForEdit(tenantId: string): Promise<{
   tenant: TenantDetails;
@@ -145,6 +145,9 @@ export async function getTenantForEdit(tenantId: string): Promise<{
   };
 }
 
+
+
+
 export async function createTenant(
   payload: TenantCreationPayload,
 ): Promise<TenantDetails> {
@@ -168,7 +171,10 @@ export async function createTenant(
     totalModules: sanitizedPayload.totalModules,
     createdAt: today,
     lastActive: today,
-    region: [sanitizedPayload.organization.country, sanitizedPayload.organization.address]
+    region: [
+      sanitizedPayload.organization.country,
+      sanitizedPayload.organization.address,
+    ]
       .filter(Boolean)
       .join(" — "),
     financialYearStart: sanitizedPayload.organization.financialYear,
@@ -182,11 +188,7 @@ export async function createTenant(
     creationData: sanitizedPayload,
   };
 
-  return request(
-    "/tenants",
-    tenantSchema,
-    jsonRequest("POST", record),
-  );
+  return request("/tenants", tenantSchema, jsonRequest("POST", record));
 }
 
 export async function updateTenant(
@@ -204,7 +206,10 @@ export async function updateTenant(
     modulesEnabled: validatedPayload.modules.length,
     totalModules: validatedPayload.totalModules,
     lastActive: today,
-    region: [validatedPayload.organization.country, validatedPayload.organization.address]
+    region: [
+      validatedPayload.organization.country,
+      validatedPayload.organization.address,
+    ]
       .filter(Boolean)
       .join(" — "),
     financialYearStart: validatedPayload.organization.financialYear,
@@ -241,9 +246,15 @@ export async function deleteTenant(tenantId: string): Promise<void> {
   ]);
 
   await Promise.all([
-    ...modules.map((item) => deleteResource(`/tenantModules/${encodeURIComponent(item.id)}`)),
-    ...users.map((item) => deleteResource(`/tenantUsers/${encodeURIComponent(item.id)}`)),
-    ...activities.map((item) => deleteResource(`/tenantActivity/${encodeURIComponent(item.id)}`)),
+    ...modules.map((item) =>
+      deleteResource(`/tenantModules/${encodeURIComponent(item.id)}`),
+    ),
+    ...users.map((item) =>
+      deleteResource(`/tenantUsers/${encodeURIComponent(item.id)}`),
+    ),
+    ...activities.map((item) =>
+      deleteResource(`/tenantActivity/${encodeURIComponent(item.id)}`),
+    ),
   ]);
   await deleteResource(`/tenants/${encodeURIComponent(tenantId)}`);
 }
@@ -319,16 +330,24 @@ export async function updateTenantModule(
       id: moduleId,
       tenantId,
       name: catalogItem.title,
-      enabled: Boolean(updated.creationData?.modules.some((item) => item.moduleId === moduleId)),
+      enabled: Boolean(
+        updated.creationData?.modules.some(
+          (item) => item.moduleId === moduleId,
+        ),
+      ),
     };
   }
 
   const query = new URLSearchParams({ tenantId });
-  const existing = await request(`/tenantModules?${query}`, tenantModulesSchema);
+  const existing = await request(
+    `/tenantModules?${query}`,
+    tenantModulesSchema,
+  );
   const tenantModule =
     existing.find((item) => item.id === moduleId) ??
     existing.find((item) => item.id === `${tenantId}-${moduleId}`);
-  if (!tenantModule) throw new Error(`Tenant module "${moduleId}" was not found.`);
+  if (!tenantModule)
+    throw new Error(`Tenant module "${moduleId}" was not found.`);
   return request(
     `/tenantModules/${encodeURIComponent(tenantModule.id)}`,
     tenantModuleSchema,
@@ -353,16 +372,18 @@ export async function getTenantUsers(tenantId: string): Promise<TenantUser[]> {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
-  return [{
-    id: `${tenantId}-admin`,
-    tenantId,
-    name: admin.fullName,
-    initials,
-    email: admin.email,
-    role: admin.role,
-    status: "Active",
-    isAdmin: true,
-  }];
+  return [
+    {
+      id: `${tenantId}-admin`,
+      tenantId,
+      name: admin.fullName,
+      initials,
+      email: admin.email,
+      role: admin.role,
+      status: "Active",
+      isAdmin: true,
+    },
+  ];
 }
 
 export async function createTenantUser(
@@ -401,18 +422,23 @@ export async function getTenantActivity(
   tenantId: string,
 ): Promise<TenantActivityItem[]> {
   const query = new URLSearchParams({ tenantId });
-  const existing = await request(`/tenantActivity?${query}`, tenantActivitiesSchema);
+  const existing = await request(
+    `/tenantActivity?${query}`,
+    tenantActivitiesSchema,
+  );
   if (existing.length > 0) return existing;
 
   const tenant = await getTenant(tenantId);
   if (!tenant.creationData) return existing;
-  return [{
-    id: `${tenantId}-created`,
-    tenantId,
-    date: tenant.createdAt,
-    time: "00:00",
-    description: `Tenant created on ${tenant.plan} plan.`,
-  }];
+  return [
+    {
+      id: `${tenantId}-created`,
+      tenantId,
+      date: tenant.createdAt,
+      time: "00:00",
+      description: `Tenant created on ${tenant.plan} plan.`,
+    },
+  ];
 }
 
 export async function createTenantActivity(

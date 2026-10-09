@@ -1,89 +1,59 @@
+import { api } from "@/services/api/axios-instance";
+import { ApiError, getApiError } from "@/services/api/api-error";
+
 import type {
-  AuthUser,
-  LoginResponse,
-  RefreshResponse,
+  AuthSession,
+  BackendLoginBody,
+  BackendResponse,
+  LoginPayload,
 } from "@/lib/auth/auth-types";
 
-export type LoginPayload = {
-  email: string;
-  cnic: string;
-  password: string;
-};
+const LOGIN_PATH = "/api/auth/login";
 
-type LogoutResponse = {
-  success: boolean;
-  message: string;
-};
-
-type MeResponse = {
-  success: boolean;
-  user: AuthUser;
-};
-
-async function parseResponse<T>(
-  response: Response,
-  fallbackMessage: string,
-): Promise<T> {
-  let data: unknown;
-
+export async function loginUser(payload: LoginPayload): Promise<AuthSession> {
   try {
-    data = await response.json();
-  } catch {
-    throw new Error(fallbackMessage);
-  }
+    const response = await api.post<BackendResponse<BackendLoginBody>>(
+      LOGIN_PATH,
+      payload,
+    );
 
-  if (!response.ok) {
-    const errorData = data as {
-      message?: string;
+    const result = response.data;
+
+    if (result.isError) {
+      throw new ApiError(
+        result.errorMessage || result.message || "Login failed.",
+      );
+    }
+
+    const body = result.body;
+
+    if (!body || !body.token || !body.expiresOn || !body.userId) {
+      throw new ApiError("Invalid login response from server.");
+    }
+
+    if (
+      !Number.isFinite(Date.parse(body.expiresOn)) ||
+      Date.parse(body.expiresOn) <= Date.now()
+    ) {
+      throw new ApiError("The server returned an expired token.");
+    }
+
+    return {
+      token: body.token,
+      expiresOn: body.expiresOn,
+      user: {
+        userId: body.userId,
+        tenantId: body.tenantId ?? null,
+        legalEntityId: body.legalEntityId ?? null,
+        userName: body.userName,
+        name: body.name,
+        email: body.email,
+        mustChangePassword: body.mustChangePassword,
+        roles: body.roles ?? [],
+        permissions: body.permissions ?? [],
+      },
     };
-
-    throw new Error(errorData.message || fallbackMessage);
+  } catch (error) {
+    throw getApiError(error);
   }
-
-  return data as T;
-}
-
-export async function loginUser(payload: LoginPayload): Promise<LoginResponse> {
-  const response = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(payload),
-  });
-
-  return parseResponse<LoginResponse>(response, "Login failed.");
-}
-
-export async function refreshAccessToken(): Promise<RefreshResponse> {
-  const response = await fetch("/api/auth/refresh", {
-    method: "POST",
-    credentials: "include",
-    cache: "no-store",
-  });
-
-  return parseResponse<RefreshResponse>(response, "Your session has expired.");
-}
-
-export async function logoutUser(): Promise<LogoutResponse> {
-  const response = await fetch("/api/auth/logout", {
-    method: "POST",
-    credentials: "include",
-  });
-
-  return parseResponse<LogoutResponse>(response, "Logout failed.");
-}
-
-export async function getCurrentUser(accessToken: string): Promise<MeResponse> {
-  const response = await fetch("/api/auth/me", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-    credentials: "include",
-    cache: "no-store",
-  });
-
-  return parseResponse<MeResponse>(response, "Unable to load user.");
 }
