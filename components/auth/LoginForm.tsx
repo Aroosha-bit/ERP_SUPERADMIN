@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
@@ -20,6 +21,8 @@ export default function LoginForm() {
   const router = useRouter();
   const { isAuthenticated, isAuthLoading } = useAuth();
   const loginMutation = useLogin();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -43,8 +46,9 @@ export default function LoginForm() {
     try {
       await loginMutation.mutateAsync(values);
       router.replace("/dashboard");
-    } catch {
-      // Backend error is displayed below.
+    } catch (error) {
+      console.error("Login failed:", error);
+      // TanStack Query exposes the error through loginMutation.error.
     }
   }
 
@@ -89,15 +93,33 @@ export default function LoginForm() {
           </Field>
 
           <Field data-invalid={!!errors.password}>
-            <Input
-              {...register("password")}
-              type="password"
-              autoComplete="current-password"
-              placeholder="Password"
-              aria-invalid={!!errors.password}
-              disabled={isLoading}
-              className="h-9 w-full text-xs sm:h-10 sm:text-sm"
-            />
+            <div className="relative">
+              <Input
+                {...register("password")}
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="Password"
+                aria-invalid={!!errors.password}
+                disabled={isLoading}
+                className="h-9 w-full pr-10 text-xs sm:h-10 sm:text-sm"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                disabled={isLoading}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+                className="absolute inset-y-0 right-3 flex items-center justify-center text-gray-500 hover:text-[#001033] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+
             {errors.password && <FieldError errors={[errors.password]} />}
           </Field>
         </FieldGroup>
