@@ -7,15 +7,88 @@
       "plan": "Enterprise",
       "status": "Active",
       "modulesEnabled": 8,
-      "totalModules": 8,
+      "totalModules": 7,
       "createdAt": "2026-03-02",
-      "lastActive": "2026-08-23",
-      "region": "Pakistan — Punjab",
+      "lastActive": "2026-10-08",
+      "region": "Pakistan — Pakistan — Punjab",
       "financialYearStart": "July",
       "baseCurrency": "PKR",
       "defaultLanguage": "English",
-      "primaryAdmin": "Ayesha Malik",
-      "adminEmail": "ayesha.malik@plra.gov.pk"
+      "primaryAdmin": "Saud Ahmed",
+      "adminEmail": "saud.ahmed@plra.gov.pk",
+      "ntn": "111",
+      "address": "Pakistan — Punjab",
+      "country": "Pakistan",
+      "creationData": {
+        "organization": {
+          "legalName": "Punjab Land Records Authority",
+          "slug": "plra",
+          "ntn": "111",
+          "address": "Pakistan — Punjab",
+          "country": "Pakistan",
+          "financialYear": "July",
+          "currency": "PKR — Pakistani Rupee",
+          "language": "English"
+        },
+        "businessUnit": {
+          "type": "Head Office"
+        },
+        "hierarchy": [],
+        "plan": "Enterprise",
+        "totalModules": 7,
+        "modules": [
+          {
+            "moduleId": "hr",
+            "moduleName": "HR",
+            "enabledSubModules": []
+          },
+          {
+            "moduleId": "finance",
+            "moduleName": "Finance",
+            "enabledSubModules": []
+          },
+          {
+            "moduleId": "administration",
+            "moduleName": "Administration",
+            "enabledSubModules": []
+          },
+          {
+            "moduleId": "procurement",
+            "moduleName": "Procurement",
+            "enabledSubModules": []
+          },
+          {
+            "moduleId": "inventory",
+            "moduleName": "Inventory Management",
+            "enabledSubModules": []
+          },
+          {
+            "moduleId": "pr_coordination",
+            "moduleName": "PR & Coordination Wing",
+            "enabledSubModules": []
+          },
+          {
+            "moduleId": "asset",
+            "moduleName": "Asset Management",
+            "enabledSubModules": []
+          },
+          {
+            "moduleId": "coordination",
+            "moduleName": "coordination",
+            "enabledSubModules": []
+          }
+        ],
+        "adminUser": {
+          "fullName": "Saud Ahmed",
+          "email": "saud.ahmed@plra.gov.pk",
+          "role": "Super Admin"
+        },
+        "branding": {
+          "primaryColor": "#0a1128",
+          "logoUrl": "",
+          "logoFileName": ""
+        }
+      }
     },
     {
       "id": "bor",
@@ -169,6 +242,64 @@
         },
         "branding": {
           "primaryColor": "#8b5cf6",
+          "logoUrl": "",
+          "logoFileName": ""
+        }
+      }
+    },
+    {
+      "id": "WTlzkIDBrxI",
+      "name": "fdafdsf",
+      "slug": "dummy",
+      "plan": "Growth",
+      "status": "Onboarding",
+      "modulesEnabled": 1,
+      "totalModules": 7,
+      "createdAt": "2026-10-08",
+      "lastActive": "2026-10-08",
+      "region": "Pakistan — Karachi",
+      "financialYearStart": "February",
+      "baseCurrency": "USD",
+      "defaultLanguage": "English",
+      "primaryAdmin": "ssdf",
+      "adminEmail": "dd@gmail.com",
+      "ntn": "12345",
+      "address": "Karachi",
+      "country": "Pakistan",
+      "creationData": {
+        "organization": {
+          "legalName": "fdafdsf",
+          "slug": "dummy",
+          "ntn": "12345",
+          "address": "Karachi",
+          "country": "Pakistan",
+          "financialYear": "February",
+          "currency": "USD — US Dollar",
+          "language": "English"
+        },
+        "businessUnit": {
+          "type": "Head Office"
+        },
+        "hierarchy": [],
+        "plan": "Growth",
+        "totalModules": 7,
+        "modules": [
+          {
+            "moduleId": "hr",
+            "moduleName": "HR",
+            "enabledSubModules": [
+              "hr-opt-2",
+              "hr-opt-3"
+            ]
+          }
+        ],
+        "adminUser": {
+          "fullName": "ssdf",
+          "email": "dd@gmail.com",
+          "role": "Tenant Administrator"
+        },
+        "branding": {
+          "primaryColor": "#0ea5e9",
           "logoUrl": "",
           "logoFileName": ""
         }

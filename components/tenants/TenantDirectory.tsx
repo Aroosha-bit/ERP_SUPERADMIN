@@ -24,6 +24,7 @@ export default function TenantDirectory() {
 
   const { data, isLoading, isError, error } = useTenants();
   const tenants = data ?? EMPTY_TENANTS;
+
   const counts = useMemo(
     () => ({
       All: tenants.length,

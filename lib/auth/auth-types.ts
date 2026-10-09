@@ -1,44 +1,45 @@
+
 export type AuthUser = {
-  id: string;
+  userId: string;
+  tenantId: string | null;
+  legalEntityId: string | null;
+  userName: string;
   name: string;
   email: string;
-  cnic: string;
-  role: string;
-  tenantId: string | null;
+  mustChangePassword: boolean;
+  roles: string[];
   permissions: string[];
 };
 
-export type AccessTokenPayload = {
-  sub: string;
+export type AuthSession = {
+  token: string;
+  expiresOn: string;
+  user: AuthUser;
+};
+
+export type LoginPayload = {
+  userName: string;
+  password: string;
+};
+
+export type BackendLoginBody = {
+  token: string;
+  expiresOn: string;
+  userId: string;
+  tenantId: string | null;
+  legalEntityId: string | null;
+  userName: string;
+  name: string;
   email: string;
-  role: string;
-  tenantId: string | null;
+  mustChangePassword: boolean;
+  roles: string[];
   permissions: string[];
-  tokenType: "access";
 };
 
-export type RefreshTokenPayload = {
-  sub: string;
-  jti: string;
-  tokenType: "refresh";
-};
-
-export type LoginResponse = {
-  success: boolean;
+export type BackendResponse<T> = {
+  statusCode: number;
   message: string;
-  accessToken: string;
-  user: AuthUser;
-};
-
-export type RefreshResponse = {
-  success: boolean;
-  message: string;
-  accessToken: string;
-  user: AuthUser;
-};
-
-export type ApiErrorResponse = {
-  success: false;
-  message: string;
-  code?: string;
+  body: T;
+  isError: boolean;
+  errorMessage: string;
 };
