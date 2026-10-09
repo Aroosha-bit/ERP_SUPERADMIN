@@ -214,10 +214,10 @@ export async function deleteTenant(tenantId: string): Promise<void> {
   ]);
 
   await Promise.all([
-    ...modules.map((item) =>
+    ...modules.map((item: any) =>
       deleteResource(`/tenantModules/${encodeURIComponent(item.id)}`),
     ),
-    ...users.map((item) =>
+    ...users.map((item: any) =>
       deleteResource(`/tenantUsers/${encodeURIComponent(item.id)}`),
     ),
     ...activities.map((item) =>
@@ -303,8 +303,8 @@ export async function updateTenantModule(
     tenantModulesSchema,
   );
   const tenantModule =
-    existing.find((item) => item.id === moduleId) ??
-    existing.find((item) => item.id === `${tenantId}-${moduleId}`);
+    existing.find((item: any) => item.id === moduleId) ??
+    existing.find((item: any) => item.id === `${tenantId}-${moduleId}`);
   if (!tenantModule)
     throw new Error(`Tenant module "${moduleId}" was not found.`);
   return request(

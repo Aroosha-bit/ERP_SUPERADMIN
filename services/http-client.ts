@@ -1,174 +1,142 @@
-// "use client";
 
-// import {
-//   clearAccessToken,
-//   getAccessToken,
-//   setAccessToken,
-// } from "@/lib/auth/token-store";
-// import { refreshAccessToken } from "@/services/auth/auth-api";
-
-// let refreshPromise: Promise<string> | null = null;
-
-// async function refreshTokenOnce() {
-//   if (!refreshPromise) {
-//     refreshPromise = refreshAccessToken()
-//       .then((response) => {
-//         setAccessToken(response.accessToken);
-
-//         return response.accessToken;
-//       })
-//       .catch((error) => {
-//         clearAccessToken();
-
-//         throw error;
-//       })
-//       .finally(() => {
-//         refreshPromise = null;
-//       });
-//   }
-
-//   return refreshPromise;
-// }
-
-// function buildHeaders(headers?: HeadersInit, token?: string | null) {
-//   const result = new Headers(headers);
-
-//   if (token) {
-//     result.set("Authorization", `Bearer ${token}`);
-//   }
-
-//   return result;
-// }
-
-// export async function apiFetch(
-//   input: RequestInfo | URL,
-//   init: RequestInit = {},
-// ): Promise<Response> {
-//   const accessToken = getAccessToken();
-
-//   const initialResponse = await fetch(input, {
-//     ...init,
-//     headers: buildHeaders(init.headers, accessToken),
-//     credentials: "include",
-//   });
-
-//   if (initialResponse.status !== 401) {
-//     return initialResponse;
-//   }
-
-//   try {
-//     const newAccessToken = await refreshTokenOnce();
-
-//     const retryResponse = await fetch(input, {
-//       ...init,
-//       headers: buildHeaders(init.headers, newAccessToken),
-//       credentials: "include",
-//     });
-
-//     if (retryResponse.status === 401) {
-//       clearAccessToken();
-//     }
-
-//     return retryResponse;
-//   } catch {
-//     clearAccessToken();
-
-//     return initialResponse;
-//   }
-// }
+"use client";
 
 import { clearSession, getAccessToken } from "@/lib/auth/token-store";
+import { API_MODE, getApiUrl } from "@/lib/config/api";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+type RuntimeSchema<T> = {
+  parse: (value: unknown) => T;
+};
 
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-  ) {
-    super(message);
-    this.name = "ApiError";
+function buildHeaders(
+  headers?: HeadersInit,
+  token?: string | null,
+): Headers {
+  const result = new Headers(headers);
+
+  if (token) {
+    result.set("Authorization", `Bearer ${token}`);
   }
+
+  return result;
 }
 
 export async function apiFetch(
-  endpoint: string,
-  options: RequestInit = {},
+  input: RequestInfo | URL,
+  init: RequestInit = {},
 ): Promise<Response> {
-  if (!API_BASE_URL) {
-    throw new Error("NEXT_PUBLIC_API_BASE_URL is not configured.");
+  const accessToken = getAccessToken();
+
+  const initialResponse = await fetch(input, {
+    ...init,
+    headers: buildHeaders(init.headers, accessToken),
+    credentials: "include",
+  });
+
+  if (initialResponse.status !== 401) {
+    return initialResponse;
   }
 
-  const token = getAccessToken();
-
-  if (!token) {
-    clearSession();
-    throw new ApiError("Your session has expired. Please log in.", 401);
-  }
-
-  const headers = new Headers(options.headers);
-  headers.set("Authorization", `Bearer ${token}`);
-
-  const url = new URL(
-    endpoint.replace(/^\//, ""),
-    `${API_BASE_URL.replace(/\/$/, "")}/`,
-  );
-
-  let response: Response;
-
-  try {
-    response = await fetch(url.toString(), {
-      ...options,
-      headers,
-      cache: "no-store",
-    });
-  } catch {
-    throw new ApiError("Unable to connect to the server.", 0);
-  }
-
-  if (response.status === 401) {
-    clearSession();
-    throw new ApiError("Your session has expired. Please log in again.", 401);
-  }
-
-  return response;
+  clearSession();
+  return initialResponse;
 }
 
-export async function apiJson<T>(
-  endpoint: string,
-  options: RequestInit = {},
-): Promise<T> {
-  const response = await apiFetch(endpoint, options);
+// Use the correct API transport for mock or backend mode.
+async function sendRequest(
+  path: string,
+  init: RequestInit = {},
+): Promise<Response> {
+  const url = getApiUrl(path);
 
-  let data: unknown;
+  if (API_MODE === "backend") {
+    return apiFetch(url, init);
+  }
+
+  return fetch(url, {
+    ...init,
+    cache: "no-store",
+  });
+}
+
+// Extract a useful message from failed HTTP responses.
+async function getErrorMessage(
+  response: Response,
+): Promise<string> {
+  let body: unknown;
 
   try {
-    data = await response.json();
+    body = await response.json();
   } catch {
-    throw new ApiError("Invalid response from the server.", response.status);
+    return `Request failed with status ${response.status}.`;
   }
+
+  if (
+    typeof body === "object" &&
+    body !== null &&
+    "message" in body &&
+    typeof body.message === "string"
+  ) {
+    return body.message;
+  }
+
+  if (
+    typeof body === "object" &&
+    body !== null &&
+    "errorMessage" in body &&
+    typeof body.errorMessage === "string"
+  ) {
+    return body.errorMessage;
+  }
+
+  return `Request failed with status ${response.status}.`;
+}
+
+// Send a request and validate its JSON response.
+export async function apiRequest<T>(
+  path: string,
+  schema: RuntimeSchema<T>,
+  init: RequestInit = {},
+): Promise<T> {
+  const response = await sendRequest(path, init);
 
   if (!response.ok) {
-    const error = data as { errorMessage?: string; message?: string };
-
-    throw new ApiError(
-      error?.errorMessage || error?.message || "Request failed.",
-      response.status,
-    );
+    throw new Error(await getErrorMessage(response));
   }
 
-  const result = data as {
-    isError?: boolean;
-    errorMessage?: string;
-    message?: string;
+  let body: unknown;
+
+  try {
+    body = await response.json();
+  } catch {
+    throw new Error("The API returned an invalid JSON response.");
+  }
+
+  return schema.parse(body);
+}
+
+// Prepare JSON request bodies consistently.
+export function jsonRequest(
+  method: "POST" | "PUT" | "PATCH",
+  body: unknown,
+): RequestInit {
+  return {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
   };
+}
 
-  if (result?.isError) {
-    throw new ApiError(
-      result.errorMessage || result.message || "Request failed.",
-      response.status,
-    );
+// DELETE may return an empty response, so don't parse JSON.
+export async function apiDelete(
+  path: string,
+): Promise<void> {
+  const response = await sendRequest(path, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(await getErrorMessage(response));
   }
-
-  return data as T;
 }
