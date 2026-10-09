@@ -32,7 +32,7 @@ export default function TenantDirectory() {
       Onboarding: tenants.filter((tenant) => tenant.status === "Onboarding").length,
       Suspended: tenants.filter((tenant) => tenant.status === "Suspended").length,
     }),
-    [tenantList],
+    [tenants],
   );
   const filteredTenants = filter === "All"
     ? tenants

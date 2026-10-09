@@ -1,5 +1,8 @@
-import { apiFetch } from "@/services/http-client";
-import { API_MODE, getApiUrl } from "@/lib/config/api";
+import {
+  apiRequest as request,
+  jsonRequest,
+  apiDelete as deleteResource,
+} from "@/services/http-client";
 import {
   businessUnitOptionsSchema,
   moduleCatalogSchema,
@@ -25,50 +28,7 @@ import type {
 } from "@/types/tenant";
 import type { TenantCreationPayload } from "@/types/tenant-creation";
 
-async function request<T>(
-  path: string,
-  schema: { parse: (value: unknown) => T },
-  init: RequestInit = {},
-): Promise<T> {
-  const url = getApiUrl(path);
-  const response =
-    API_MODE === "backend"
-      ? await apiFetch(url, init)
-      : await fetch(url, { ...init, cache: "no-store" });
 
-  let responseBody: unknown;
-  try {
-    responseBody = await response.json();
-  } catch {
-    if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}.`);
-    }
-    throw new Error("The API returned an invalid JSON response.");
-  }
-
-  if (!response.ok) {
-    const message =
-      typeof responseBody === "object" &&
-      responseBody !== null &&
-      "message" in responseBody &&
-      typeof responseBody.message === "string"
-        ? responseBody.message
-        : `Request failed with status ${response.status}.`;
-    throw new Error(message);
-  }
-
-  return schema.parse(responseBody);
-}
-
-// json requests is a helper, avoid writing method, headers and body every time you make a request. It will automatically set the method, headers and stringify the body for you.
-
-function jsonRequest(method: "POST" | "PUT", body: unknown): RequestInit {
-  return {
-    method,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  };
-}
 // endpoint to get all tenants. which are on main page of localhost/tenants.
 
 export async function getTenants(): Promise<TenantDetails[]> {
@@ -256,17 +216,6 @@ export async function deleteTenant(tenantId: string): Promise<void> {
   await deleteResource(`/tenants/${encodeURIComponent(tenantId)}`);
 }
 
-async function deleteResource(path: string): Promise<void> {
-  const url = getApiUrl(path);
-  const response =
-    API_MODE === "backend"
-      ? await apiFetch(url, { method: "DELETE" })
-      : await fetch(url, { method: "DELETE" });
-
-  if (!response.ok) {
-    throw new Error(`Could not delete resource (status ${response.status}).`);
-  }
-}
 // use to get all business units and module catalog. It will be used in the create tenant wizard to show the
 //  list of business units and modules.
 export async function getBusinessUnits(): Promise<BusinessUnitOption[]> {

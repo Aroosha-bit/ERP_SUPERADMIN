@@ -98,7 +98,7 @@ export default function TenantTable({ data }: Props) {
             <MoreVertical size={17} />
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            align="end"
+            className="w-40 hover:bg-transparent"
             onClick={(event) => event.stopPropagation()}
           >
             <DropdownMenuItem
@@ -109,14 +109,14 @@ export default function TenantTable({ data }: Props) {
               }
               className="flex items-center gap-2 text-blue-600 hover:bg-none cursor-pointer"
             >
-              <Pencil size={15} />
+              Edit
             </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
               onClick={() => handleDelete(row.original)}
               className="flex items-center gap-2 text-red-600 hover:bg-none cursor-pointer"
             >
-              <Trash2 size={15} />
+              Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
