@@ -1,3 +1,5 @@
+//Purpose: Make sure the data coming from the API/backend has the correct structure.
+
 import { z } from "zod";
 import type { HierarchyTreeNode } from "@/types/tenant-creation";
 

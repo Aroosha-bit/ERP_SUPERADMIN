@@ -1,5 +1,5 @@
 "use client";
-
+// this contain all the react-query hooks for tenants, including queries and mutations
 import {
   useMutation,
   useQuery,

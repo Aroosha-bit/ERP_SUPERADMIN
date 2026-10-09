@@ -1,5 +1,8 @@
-import { apiFetch } from "@/services/http-client";
-import { API_MODE, getApiUrl } from "@/lib/config/api";
+import {
+  apiRequest as request,
+  jsonRequest,
+  apiDelete as deleteResource,
+} from "@/services/http-client";
 import {
   businessUnitOptionsSchema,
   moduleCatalogSchema,
@@ -23,57 +26,20 @@ import type {
 } from "@/types/tenant";
 import type { TenantCreationPayload } from "@/types/tenant-creation";
 
-async function request<T>(
-  path: string,
-  schema: { parse: (value: unknown) => T },
-  init: RequestInit = {},
-): Promise<T> {
-  const url = getApiUrl(path);
-  const response =
-    API_MODE === "backend"
-      ? await apiFetch(url, init)
-      : await fetch(url, { ...init, cache: "no-store" });
 
-  let responseBody: unknown;
-  try {
-    responseBody = await response.json();
-  } catch {
-    if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}.`);
-    }
-    throw new Error("The API returned an invalid JSON response.");
-  }
-
-  if (!response.ok) {
-    const message =
-      typeof responseBody === "object" &&
-      responseBody !== null &&
-      "message" in responseBody &&
-      typeof responseBody.message === "string"
-        ? responseBody.message
-        : `Request failed with status ${response.status}.`;
-    throw new Error(message);
-  }
-
-  return schema.parse(responseBody);
-}
-
-function jsonRequest(method: "POST" | "PUT", body: unknown): RequestInit {
-  return {
-    method,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  };
-}
+// endpoint to get all tenants. which are on main page of localhost/tenants.
 
 export async function getTenants(): Promise<TenantDetails[]> {
   return request("/tenants", tenantListSchema);
 }
 
+// to open any specific tenant like when we open plra
+
 export async function getTenant(tenantId: string): Promise<TenantDetails> {
   return request(`/tenants/${encodeURIComponent(tenantId)}`, tenantSchema);
 }
 
+// get data for edit tenant
 
 
 export async function getTenantForEdit(tenantId: string): Promise<{
@@ -145,6 +111,7 @@ export async function getTenantForEdit(tenantId: string): Promise<{
   };
 }
 
+// post api for creating a new tenant. It will be called when we click on create tenant button in the create tenant wizard.
 
 
 
@@ -166,7 +133,7 @@ export async function createTenant(
     name: sanitizedPayload.organization.legalName,
     slug: sanitizedPayload.organization.slug,
     plan: sanitizedPayload.plan,
-    status: "Onboarding" as const,
+    status: "Onboarding" as const, // status by default onboarding
     modulesEnabled: sanitizedPayload.modules.length,
     totalModules: sanitizedPayload.totalModules,
     createdAt: today,
@@ -191,6 +158,7 @@ export async function createTenant(
   return request("/tenants", tenantSchema, jsonRequest("POST", record));
 }
 
+// update tenant api. It will be called when we click on save changes button in the edit tenant wizard.
 export async function updateTenant(
   tenantId: string,
   payload: TenantCreationPayload,
@@ -259,22 +227,13 @@ export async function deleteTenant(tenantId: string): Promise<void> {
   await deleteResource(`/tenants/${encodeURIComponent(tenantId)}`);
 }
 
-async function deleteResource(path: string): Promise<void> {
-  const url = getApiUrl(path);
-  const response =
-    API_MODE === "backend"
-      ? await apiFetch(url, { method: "DELETE" })
-      : await fetch(url, { method: "DELETE" });
-
-  if (!response.ok) {
-    throw new Error(`Could not delete resource (status ${response.status}).`);
-  }
-}
-
+// use to get all business units and module catalog. It will be used in the create tenant wizard to show the
+//  list of business units and modules.
 export async function getBusinessUnits(): Promise<BusinessUnitOption[]> {
   return request("/businessUnits", businessUnitOptionsSchema);
 }
 
+// get lists of modules like HR 
 export async function getModuleCatalog(): Promise<ModuleCatalogItem[]> {
   return request("/moduleCatalog", moduleCatalogSchema);
 }

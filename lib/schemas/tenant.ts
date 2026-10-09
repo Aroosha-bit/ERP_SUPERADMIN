@@ -1,3 +1,5 @@
+// Purpose: Validate what the user enters in the Tenant Creation Wizard.
+
 import { z } from "zod";
 
 // ─── Step 0: Organization Basics ─────────────────────────────────────────────
