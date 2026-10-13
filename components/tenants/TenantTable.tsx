@@ -1,15 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, MoreVertical } from "lucide-react";
 import {
   flexRender,
   useTable,
   tableFeatures,
   rowPaginationFeature,
+  rowSortingFeature,
   createPaginatedRowModel,
+  createSortedRowModel,
+  sortFn_text,
+  sortFn_basic,
 } from "@tanstack/react-table";
 import type { ColumnDef } from "@tanstack/react-table";
+
 import type { Tenant } from "@/types/tenant";
 import TenantStatusBadge from "./TenantStatusBadge";
 import ModulesIndicator from "./ModulesIndicator";
@@ -23,8 +28,14 @@ import {
 import { useDeleteTenantMutation } from "@/hooks/tenants/use-tenants";
 
 const features = tableFeatures({
+  rowSortingFeature,
   rowPaginationFeature,
+  sortedRowModel: createSortedRowModel(),
   paginatedRowModel: createPaginatedRowModel(),
+  sortFns: {
+    text: sortFn_text,
+    basic: sortFn_basic,
+  },
 });
 
 interface Props {
@@ -34,11 +45,14 @@ interface Props {
 export default function TenantTable({ data }: Props) {
   const router = useRouter();
   const deleteTenant = useDeleteTenantMutation();
+
   const handleDelete = (tenant: Tenant) => {
     if (
       !window.confirm(`Delete tenant "${tenant.name}"? This cannot be undone.`)
-    )
+    ) {
       return;
+    }
+
     deleteTenant.mutate(tenant.id, {
       onError: (error) => window.alert(error.message),
     });
@@ -48,6 +62,7 @@ export default function TenantTable({ data }: Props) {
     {
       accessorKey: "name",
       header: "Tenant",
+      sortFn: "text",
       cell: ({ row }) => (
         <div>
           <p className="font-medium text-[#18213D]">{row.original.name}</p>
@@ -60,11 +75,13 @@ export default function TenantTable({ data }: Props) {
     {
       accessorKey: "status",
       header: "Status",
+      sortFn: "text",
       cell: ({ row }) => <TenantStatusBadge status={row.original.status} />,
     },
     {
       accessorKey: "modulesEnabled",
       header: "Modules Enabled",
+      sortFn: "basic",
       cell: ({ row }) => (
         <ModulesIndicator
           enabled={row.original.modulesEnabled}
@@ -75,14 +92,17 @@ export default function TenantTable({ data }: Props) {
     {
       accessorKey: "createdAt",
       header: "Created",
+      sortFn: "text",
     },
     {
       accessorKey: "lastActive",
       header: "Last Active",
+      sortFn: "text",
     },
     {
       id: "actions",
       header: "",
+      enableSorting: false,
       cell: ({ row }) => (
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -97,6 +117,7 @@ export default function TenantTable({ data }: Props) {
           >
             <MoreVertical size={17} />
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
             className="w-40 hover:bg-transparent"
             onClick={(event) => event.stopPropagation()}
@@ -107,14 +128,15 @@ export default function TenantTable({ data }: Props) {
                   `/tenants/create-tenant/organization-basics?tenantId=${encodeURIComponent(row.original.id)}`,
                 )
               }
-              className="flex items-center gap-2 text-blue-600 hover:bg-none cursor-pointer"
+              className="flex cursor-pointer items-center gap-2 text-blue-600"
             >
               Edit
             </DropdownMenuItem>
+
             <DropdownMenuItem
               variant="destructive"
               onClick={() => handleDelete(row.original)}
-              className="flex items-center gap-2 text-red-600 hover:bg-none cursor-pointer"
+              className="flex cursor-pointer items-center gap-2 text-red-600"
             >
               Delete
             </DropdownMenuItem>
@@ -145,19 +167,44 @@ export default function TenantTable({ data }: Props) {
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="border-b border-slate-200">
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="px-5 py-4 text-left text-sm font-semibold text-[#020D2B]"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </th>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  const column = header.column;
+                  const canSort = column.getCanSort();
+                  const sorted = column.getIsSorted();
+
+                  return (
+                    <th
+                      key={header.id}
+                      className="px-5 py-4 text-left text-sm font-semibold text-[#020D2B]"
+                    >
+                      {header.isPlaceholder ? null : canSort ? (
+                        <button
+                          type="button"
+                          onClick={column.getToggleSortingHandler()}
+                          className="cursor-pointer inline-flex items-center gap-2 text-left transition-colors hover:text-blue-600"
+                          title={`Sort by ${column.id}`}
+                        >
+                          {flexRender(
+                            column.columnDef.header,
+                            header.getContext(),
+                          )}
+
+                          {sorted === "asc" ? (
+                            <ArrowUp size={15} className="text-blue-600" />
+                          ) : sorted === "desc" ? (
+                            <ArrowDown size={15} className="text-blue-600" />
+                          ) 
+                          : (
+                            <ArrowUpDown size={15} className="text-slate-400" />
+                          )
+                          }
+                        </button>
+                      ) : (
+                        flexRender(column.columnDef.header, header.getContext())
+                      )}
+                    </th>
+                  );
+                })}
               </tr>
             ))}
           </thead>
@@ -179,13 +226,14 @@ export default function TenantTable({ data }: Props) {
                 ))}
               </tr>
             ))}
+
             {table.getRowModel().rows.length === 0 && (
               <tr>
                 <td
                   colSpan={columns.length}
                   className="px-5 py-10 text-center text-sm text-slate-500"
                 >
-                  No tenants match this filter.
+                  No tenants found.
                 </td>
               </tr>
             )}
