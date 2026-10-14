@@ -124,7 +124,7 @@
       "name": "PERA",
       "slug": "pera",
       "plan": "Starter",
-      "status": "Suspended",
+      "status": "Active",
       "modulesEnabled": 2,
       "totalModules": 8,
       "createdAt": "2026-07-30",
@@ -282,10 +282,7 @@
           {
             "moduleId": "hr",
             "moduleName": "HR",
-            "enabledSubModules": [
-              "hr-opt-2",
-              "hr-opt-3"
-            ]
+            "enabledSubModules": ["hr-opt-2", "hr-opt-3"]
           }
         ],
         "adminUser": {
