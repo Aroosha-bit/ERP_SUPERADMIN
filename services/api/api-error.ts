@@ -28,7 +28,7 @@ export function getApiError(error: unknown): ApiError {
       (error.code === "ECONNABORTED"
         ? "Request timed out. Please try again."
         : !error.response
-          ? "Network error. Please check your connection or API configuration."
+          ? "Network error. Please check your connection"
           : "Something went wrong. Please try again.");
 
     return new ApiError(message, error.response?.status);
